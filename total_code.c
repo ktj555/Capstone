@@ -579,7 +579,7 @@ DEFINE_PROFILE(permeability, t, i) {
 			C_PROFILE(c, t, i) = 1 / C_UDMI(c, t, PERMEABILITY);
 		}
 		else {
-			Message("Can't access UDM in permeability")
+			Message("Can't access UDM in permeability");
 			C_PROFILE(c, t, i) = 2.11e10;
 		}
 	}
