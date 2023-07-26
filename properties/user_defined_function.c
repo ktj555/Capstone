@@ -89,7 +89,68 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s);
 real dqsfdT_s(real H, real P, real v, real alpha, real T_s);
 
 real h_inject(real H, real P, real v);
+void check_list_message();
 
+void check_list_message(){
+	if(inlet_enthalpy_check_list[0]==1){
+		Message("Access Error : Pressure | inlet | during inlet enthalpy");
+	}
+	if(inlet_enthalpy_check_list[1]==1){
+		Message("Access Error : Velocity | inlet | during inlet enthalpy");
+	}
+	if(inlet_enthalpy_check_list[2]==1){
+		Message("Access Error : Solid temperature | inlet | during inlet enthalpy");
+	}
+	if(inlet_enthalpy_check_list[3]==1){
+		Message("Access Error : UDM | inlet | during inlet enthalpy");
+	}
+	if(inlet_enthalpy_check_list[4]==1){
+		Message("Access Error : Modified Enthalpy | inlet | during inlet enthalpy");
+	}
+	if(inlet_enthalpy_check_list[5]==1){
+		Message("Access Error : Enthalpy Gradient | inlet | during inlet enthalpy");
+	}
+	if(inlet_temp_s_check_list[0]==1){
+		Message("Access Error : Pressure | inlet | during inlet flux solid");
+	}
+	if(inlet_temp_s_check_list[1]==1){
+		Message("Access Error : Velocity | inlet | during inlet flux solid");
+	}
+	if(inlet_temp_s_check_list[2]==1){
+		Message("Access Error : Solid temperature | inlet | during flux solid");
+	}
+	if(inlet_temp_s_check_list[3]==1){
+		Message("Access Error : UDM | inlet | during flux solid");
+	}
+	if(inlet_temp_s_check_list[4]==1){
+		Message("Access Error : Modified Enthalpy | inlet | during flux solid");
+	}
+	if(inlet_velocity_check_list[0]==1){
+		Message("Access Error : Pressure | inlet | during inlet velocity");
+	}
+	if(inlet_velocity_check_list[1]==1){
+		Message("Access Error : Modified Enthalpy | inlet | during inlet velocity");
+	}
+	if(porosity_and_permeability_check_list[0]==1){
+		Message("Access Error : Porosity | cell zone | during cell zone condition");
+	}
+	if(porosity_and_permeability_check_list[1]==1){
+		Message("Access Error : Resistence | cell zone | during cell zone condition");
+	}
+
+	for(int i = 0; i<6;i++){
+		inlet_enthalpy_check_list[i]=0;
+	}
+	for(int i = 0; i<5;i++){
+		inlet_temp_s_check_list[i]=0;
+	}
+	for(int i = 0; i<2;i++){
+		inlet_velocity_check_list[i]=0;
+	}
+	for(int i = 0; i<2;i++){
+		porosity_and_permeability_check_list[i]=0;
+	}
+}
 
 real RHO_L(real T, real P) {
 	return 998.0;

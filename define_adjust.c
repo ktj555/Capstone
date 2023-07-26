@@ -27,5 +27,8 @@ DEFINE_ADJUST(adjust_variables, d) // parameter 1 : macro name | 2 : domain poin
 		}
 		end_c_loop(c, t)
 	}
+
+	check_list_message();
+
 #endif
 }
