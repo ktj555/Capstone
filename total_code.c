@@ -3,8 +3,7 @@
 // User defined values
 #define MY_SIGMA 0.072
 #define MY_C_SF 0.006
-#define INLET_TEMP_F 273.15+30
-#define INJECTION_TEMP 273.15+30
+#define INLET_TEMP_F 303.15
 #define MASS_IN 0.001
 #define Q_IN 1e6
 #define D_P 100e-6
