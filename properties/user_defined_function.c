@@ -92,50 +92,72 @@ real h_inject(real H, real P, real v);
 void check_list_message();
 
 void check_list_message(){
+
+	int check = 0;
+
 	if(inlet_enthalpy_check_list[0]==1){
 		Message("\nAccess Error : Pressure | inlet | during inlet enthalpy\n");
+		check = 1;
 	}
 	if(inlet_enthalpy_check_list[1]==1){
 		Message("\nAccess Error : Velocity | inlet | during inlet enthalpy\n");
+		check = 1;
 	}
 	if(inlet_enthalpy_check_list[2]==1){
 		Message("\nAccess Error : Solid temperature | inlet | during inlet enthalpy\n");
+		check = 1;
 	}
 	if(inlet_enthalpy_check_list[3]==1){
 		Message("\nAccess Error : UDM | inlet | during inlet enthalpy\n");
+		check = 1;
 	}
 	if(inlet_enthalpy_check_list[4]==1){
 		Message("\nAccess Error : Modified Enthalpy | inlet | during inlet enthalpy\n");
+			check = 1;
 	}
 	if(inlet_enthalpy_check_list[5]==1){
 		Message("\nAccess Error : Enthalpy Gradient | inlet | during inlet enthalpy\n");
+		check = 1;
 	}
 	if(inlet_temp_s_check_list[0]==1){
 		Message("\nAccess Error : Pressure | inlet | during inlet flux solid\n");
+		check = 1;
 	}
 	if(inlet_temp_s_check_list[1]==1){
 		Message("\nAccess Error : Velocity | inlet | during inlet flux solid\n");
+		check = 1;
 	}
 	if(inlet_temp_s_check_list[2]==1){
 		Message("\nAccess Error : Solid temperature | inlet | during flux solid\n");
+		check = 1;
 	}
 	if(inlet_temp_s_check_list[3]==1){
 		Message("\nAccess Error : UDM | inlet | during flux solid\n");
+		check = 1;
 	}
 	if(inlet_temp_s_check_list[4]==1){
 		Message("\nAccess Error : Modified Enthalpy | inlet | during flux solid\n");
+		check = 1;
 	}
 	if(inlet_velocity_check_list[0]==1){
 		Message("\nAccess Error : Pressure | inlet | during inlet velocity\n");
+		check = 1;
 	}
 	if(inlet_velocity_check_list[1]==1){
 		Message("\nAccess Error : Modified Enthalpy | inlet | during inlet velocity\n");
+		check = 1;
 	}
 	if(porosity_and_permeability_check_list[0]==1){
 		Message("\nAccess Error : Porosity | cell zone | during cell zone condition\n");
+		check = 1;
 	}
 	if(porosity_and_permeability_check_list[1]==1){
 		Message("\nAccess Error : Resistence | cell zone | during cell zone condition\n");
+		check = 1;
+	}
+	
+	if(check == 0){
+		Message("\nAll access \n");
 	}
 
 	for(int i = 0; i<6;i++){
@@ -665,5 +687,5 @@ real dqsfdT_s(real H, real P, real v, real alpha, real T_s) {
 	}
 }
 real h_inject(real H, real P, real v) {
-	return 3.66;
+	return 3.66 * K_F(H,P) / D_P;
 }

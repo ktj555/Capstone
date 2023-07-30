@@ -29,7 +29,7 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 		}
 		else{
 			P = 0;
-			inlet_enthalpy_check_list[0] = 1
+			inlet_enthalpy_check_list[0] = 1;
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
 			v = F_U(f,t);		// F_U함수를 통해 해당 면에서 x방향 속도 호출	
