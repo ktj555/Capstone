@@ -5,9 +5,9 @@
 #define MY_C_SF 0.006
 #define INLET_TEMP_F 303.15
 #define MASS_IN 0.001
-#define Q_IN 1e6
+#define Q_IN 1e3
 #define D_P 100e-6
-#define DIAMETER 60e-3
+#define DIAMETER 0.06
 
 // Gravity
 #define G_X -9.81
@@ -25,10 +25,10 @@
 #define SOURCE_F 4
 #define SOURCE_S 5
 
-int inlet_enthalpy_check_list[6] = {0,};
-int inlet_temp_s_check_list[5] = {0,};
-int inlet_velocity_check_list[2] = {0,};
-int porosity_and_permeability_check_list[2] = {0,};
+int inlet_enthalpy_check_list[6] = {0,0,0,0,0,0};
+int inlet_temp_s_check_list[5] = {0,0,0,0,0};
+int inlet_velocity_check_list[2] = {0,0};
+int porosity_and_permeability_check_list[2] = {0,0};
 
 // fluid dynamics properties for each phases
 real RHO_L(real T, real P);
@@ -162,27 +162,25 @@ DEFINE_INIT(initialize_saturation_and_temperature, d)
 #endif
 }
 
-DEFINE_ADJUST(adjust_variables, d) // parameter 1 : macro name | 2 : domain pointer
+DEFINE_ADJUST(adjust_variables, d) 
 {
-#if !RP_HOST		// Host cpu가 아닌 Node cpu 라면
-	cell_t c;		// Cell 데이터 구조를 저장할 cell_t 타입 c 선언
-	Thread* t;		// Cell Thread 데이터 구조를 저장할 Thread pointer 타입 t 선언
+#if !RP_HOST
+	cell_t c;
+	Thread* t;
 
-	real P;			// 계산에 필요한 Cell의 압력을 저장하기 위한 변수
-	real h_m;		// 계산에 필요한 Enthalpy를 저장하기 위한 변수
+	real P;
+	real h_m;
 
-	thread_loop_c(t, d) {	// domain에 포함된 cell thread를 하나씩 불러와 t에 부여하고 루프를 진행
-		begin_c_loop(c, t)	// cell thread에 포함된 cell을 하나씩 불러와 c에 부여하고 루프를 진행
+	thread_loop_c(t, d) {
+		begin_c_loop(c, t)
 		{
-			h_m = C_UDSI(c, t, MODIFIED_ENTHALPY);		// Thread t에 포함된 c가 지정하는 Cell에 저장되어있는 UDS 중 MODIFIED_ENTALPY번째에 저장된 값 호출
-			P = C_P(c, t);								// Thread t에 포함된 c가 지정하는 Cell에 저장되어있는 압력값 호출
-			C_UDMI(c, t, TEMP_F) = H_to_T(h_m, P);		// Thread t에 포함된 c가 지정하는 Cell에 저장되어 있는 UDM 중 TEMP_F번째에 저장된 값을 설정
-			C_UDMI(c, t, SATURATION) = H_to_S(h_m, P);	// Thread t에 포함된 c가 지정하는 Cell에 저장되어 있는 UDM 중 SATURATION번째에 저장된 값을 설정
+			h_m = C_UDSI(c, t, MODIFIED_ENTHALPY);
+			P = C_P(c, t);
+			C_UDMI(c, t, TEMP_F) = H_to_T(h_m, P);
+			C_UDMI(c, t, SATURATION) = H_to_S(h_m, P);
 		}
 		end_c_loop(c, t)
 	}
-
-	check_list_message();
 
 #endif
 }
@@ -279,6 +277,8 @@ DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_transient)
 	Message("get               : %.8g [W]\n", energy_get_solid);
 	Message("Error                   : %.8g [W]\n",error);
 	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n\n\n");
+
+	check_list_message();
 
 #endif
 	node_to_host_real_5(energy_in_solid, energy_out_solid, energy_get_solid, energy_to_fluid, error);
@@ -388,22 +388,16 @@ DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_steady) {
 	Message("Total exchange to fluid : %.8g [W]\n", energy_to_fluid);
 	Message("Error                   : %.8g [W]\n", error);
 	Message("\n-------------------------------------------\n");
+
+	check_list_message();
 #endif
 }
 
-
-// DEFINE_PROFILE 매크로는 Fluent에서 필요한 profile들을 정의하기 위해 사용
-// 일반적으로 경계조건을 부여하기 위한 용도로 많이 사용됨
-// DEFNE_PROFILE 매크로는 해당 데이터에 solver가 접근이 가능한 상황인지 체크하는 것이 중요
-// 만약 sovler에서 해당 데이터에 접근하는 것이 허용되지 않는 상황이면 Fluent는 강제 종료됨
-
-// 해당 DEFINE_PROFILE 매크로는 입구 Enthalpy를 정의하기 위해 사용
-
-DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread pointer | 3 : index
+DEFINE_PROFILE(inlet_enthalpy, t, i)
 {
-	Thread* tc;	// Cell Thread 데이터 구조를 저장할 Thread pointer 타입 t 선언
-	face_t f;	// Face 데이터 구조를 저장할 Face_t 타입 f 선언
-	cell_t c;	// Cell 데이터 구조를 저장할 cell_t 타입 c 선언
+	Thread* tc;
+	face_t f;
+	cell_t c;
 
 	real h_m, h_in, P, v, T_s, T;
 	real m_flux, dhdx;
@@ -411,38 +405,38 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 	real e, k_f_eff;
 	real h_m_s0, h_m_s1;
 
-	m_flux = MASS_IN / (M_PI * pow(DIAMETER, 2) / 4);	// mass flux = mass flow rate / Area
+	m_flux = MASS_IN / (M_PI * pow(DIAMETER, 2) / 4);
 
-	begin_f_loop(f, t)	// face thread에 포함된 face를 하나씩 불러와 f에 부여하고 루프를 진행
+	begin_f_loop(f, t)
 	{
-		c = F_C0(f, t);		// 기울기 연산은 face에 대해서 수행 불가, 오로지 cell에 대해서 가능하기 때문에 f에 접하고 있는 Cell의 정보를 불러와 c에 저장
-		tc = THREAD_T0(t);	// c를 이용하여 값을 불러올 경우, c를 포함하고 있는 cell thread가 필요하기 때문에 to에 있는 face들과 접하는 cell들의 정보를 포함하는 cell thread를 불러와 tc에 저장
+		c = F_C0(f, t);
+		tc = THREAD_T0(t);
 		
 		if(NNULLP(THREAD_STORAGE(t,SV_P))){
-			P = F_P(f, t);		// F_P함수를 통해 해당 면에서 압력 호출
+			P = F_P(f, t);
 		}
 		else{
 			P = 0;
 			inlet_enthalpy_check_list[0] = 1
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
-			v = F_U(f,t);		// F_U함수를 통해 해당 면에서 x방향 속도 호출	
+			v = F_U(f,t);
 		}
 		else{
 			v = m_flux / 998.0;
 			inlet_enthalpy_check_list[1] = 1;
 		}
-		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {	// face thread t에서 UDS의 주소를 반한화여 Null인지 아닌지 판단
-			T_s = F_UDSI(f, t, TEMP_S);						// Null이 아니라면 메모리에 할당되어 접근 가능한 상태이므로 값을 호출
+		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {
+			T_s = F_UDSI(f, t, TEMP_S);
 		}
-		else {												// Null 이라면 메모리에 할당되지 않아 접근 불가능한 상태이므로 기본값 할당
+		else {
 			T_s = INLET_TEMP_F;
 			inlet_enthalpy_check_list[2] = 1;
 		}
-		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {			// face thread t에서 UDM의 주소를 반환하여 Null인지 아닌지 판단
-			e = F_UDMI(f, t, MY_POROSITY);					// Null이 아니라면 메모리에 할당되어 접근 가능한 상태이므로 값을 호출
+		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {
+			e = F_UDMI(f, t, MY_POROSITY);
 		}
-		else {												// Null 이라면 메모리에 할당되지 않아 접근 불가능한 상태이므로 기본값 할당
+		else {
 			e = 1.0;
 			inlet_enthalpy_check_list[3] = 1;
 		}
@@ -460,17 +454,13 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 			dhdx = 0.0;
 			inlet_enthalpy_check_list[5] = 1;
 		}
-		h_in = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;	// reservoir coolant Enthalpy
-		// face에서 불러온 변수들을 바탕으로 계산에 필요한 값들을 저장
+		h_in = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;
 		T = H_to_T(h_m, P);
 		k_f_eff = e * K_F(h_m, P);
 		h_c = h_inject(h_m, P, v);
 		h_m_s0 = H_V_SAT(P);
 		h_m_s1 = H_L_SAT(P);
 
-		// 각 상의 상태에 따라 반환할 값을 계산하여 F_PROFILE로 반환
-		// UDS specified value 조건의 경우 해당 UDS가 가져야 할 값을 반환
-		// UDS specified flux 조건의 경우 해당 UDS의 diffusive flux 값을 반환
 		if (h_m <= h_m_s1) {
 			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * T_s - k_f_eff / m_flux / CP_L(T, P) * dhdx) / (1 + h_c / m_flux / CP_L(T, P));
 		}
@@ -483,8 +473,6 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 	}
 	end_f_loop(f, t)
 }
-
-// 해당 DEFINE_PROFILE 매크로는 입구에서 유체와의 대류열전달에 의해 빠져나가는 고체 표면의 열유속을 부여하기 위해 사용
 
 DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 {
@@ -543,8 +531,6 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 	end_f_loop(f, t)
 }
 
-// 해당 DEFINE_PROFILE 매크로는 입구 속력을 정의하기 위해 사용
-
 DEFINE_PROFILE(inlet_velocity, t, i)
 {
 	face_t f;
@@ -587,8 +573,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	end_f_loop(f, t)
 }
 
-// 해당 DEFINE_PROFILE 매크로는 출구단에서 고체에 조사되는 열유속을 부여하기 위해 사용
-
 DEFINE_PROFILE(heat_flux, t, i)
 {
 	face_t f;
@@ -599,8 +583,6 @@ DEFINE_PROFILE(heat_flux, t, i)
 	}
 	end_f_loop(f, t)
 }
-
-// 해당 DEFINE_PROFILE 매크로는 porosity를 정의하기 위해 사용
 
 DEFINE_PROFILE(porosity, t, i) {
 	cell_t c;
@@ -616,8 +598,6 @@ DEFINE_PROFILE(porosity, t, i) {
 	end_c_loop(c,t)
 }
 
-// 해당 DEFINE_PROFILE 매크로는 Permeability를 정의하기 위해 사용
-
 DEFINE_PROFILE(permeability_resistence, t, i) {
 	cell_t c;
 	begin_c_loop(c, t) {
@@ -631,7 +611,6 @@ DEFINE_PROFILE(permeability_resistence, t, i) {
 	}
 	end_c_loop(c,t)
 }
-
 
 
 DEFINE_PROPERTY(Mixture_Rho, c, t) {
