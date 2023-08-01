@@ -564,10 +564,10 @@ real qsf(real H, real P, real v, real alpha, real T_s) {
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
 	if (H <= h_m_s1) {
-		return q_l(H, P, v, alpha, T_s);
+		return q_l(T, P, v, alpha, T_s);
 	}
 	else if (H >= h_m_s0) {
-		return q_v(H, P, v, alpha, T_s);
+		return q_v(T, P, v, alpha, T_s);
 	}
 	else {
 		return q_boil(H, P, alpha, T_s) + (1 - S) * h_sv(T, P, v) * alpha * (T_s - T_sat);
