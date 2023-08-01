@@ -58,6 +58,7 @@ real K_V(real T, real P);
 real dK_VdT(real T, real P);
 real K_S(real T);
 real T_SAT(real P);
+real dT_SATdP(real P);
 real H_L_SAT(real P);
 real H_FG(real P);
 real H_V_SAT(real P);
