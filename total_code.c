@@ -438,7 +438,7 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 	cell_t c;
 
 	real h_m, h_in, P, v, T_s, T;
-	real m_flux, dhdx;
+	real m_flux, dhdx, dPdx;
 	real h_c;
 	real e, k_f_eff;
 	real h_m_s0, h_m_s1;
@@ -456,6 +456,12 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 		else{
 			P = 0;
 			inlet_enthalpy_check_list[0] = 1;
+		}
+		if(NNULLP(THREAD_STORAGE(tc,SV_P_G))){
+			dPdx = C_P_G(c,tc)[0];
+		}
+		else{
+			dPdx = 0;
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
 			v = F_U(f,t);
@@ -506,11 +512,12 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P) + H_V_SAT(P) / CP_V(T, P)) - k_f_eff / CP_V(T, P) * dhdx) / (1 + h_c / m_flux / CP_V(T, P));
 		}
 		else {
-			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P))) * MY_BETA(h_m,P);
+			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P)) - k_f_eff / m_flux * dT_SATdP(P) * dPdx) / MY_BETA(h_m,P);
 		}
 	}
 	end_f_loop(f, t)
 }
+
 
 DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 {
@@ -872,6 +879,13 @@ real T_SAT(real P) {
 	real a2 = -0.2940193901122584;
 	real a3 = 25.197563642164386;
 	return a0 + a1 * p + a2 * pow(p, 2) + a3 * log(p);
+}
+real dT_SATdP(real P){
+	real p = (P + RP_Get_Real("operating-pressure")) / 1e6;
+	real a1 = 11.983108526790891;
+	real a2 = -0.2940193901122584;
+	real a3 = 25.197563642164386;
+	return (a1 + 2 * a2 * p + a3 / p) / 1e6;
 }
 real H_L_SAT(real P) {
 	return CP_L(T_SAT(P), P) * T_SAT(P);

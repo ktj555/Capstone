@@ -12,7 +12,7 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 	cell_t c;	// Cell 데이터 구조를 저장할 cell_t 타입 c 선언
 
 	real h_m, h_in, P, v, T_s, T;
-	real m_flux, dhdx;
+	real m_flux, dhdx, dPdx;
 	real h_c;
 	real e, k_f_eff;
 	real h_m_s0, h_m_s1;
@@ -30,6 +30,12 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 		else{
 			P = 0;
 			inlet_enthalpy_check_list[0] = 1;
+		}
+		if(NNULLP(THREAD_STORAGE(tc,SV_P_G))){
+			dPdx = C_P_G(c,tc)[0];
+		}
+		else{
+			dPdx = 0;
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
 			v = F_U(f,t);		// F_U함수를 통해 해당 면에서 x방향 속도 호출	
@@ -84,7 +90,7 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P) + H_V_SAT(P) / CP_V(T, P)) - k_f_eff / CP_V(T, P) * dhdx) / (1 + h_c / m_flux / CP_V(T, P));
 		}
 		else {
-			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P))) * MY_BETA(h_m,P);
+			F_PROFILE(f, t, i) = (h_in + h_c / m_flux * (T_s - T_SAT(P)) - k_f_eff / m_flux * dT_SATdP(P) * dPdx) / MY_BETA(h_m,P);
 		}
 	}
 	end_f_loop(f, t)
@@ -156,7 +162,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	face_t f;
 
 	real T, P, h_m, rho;
-	real h_m_s0, h_m_s1;
 
 	begin_f_loop(f, t)
 	{
@@ -176,18 +181,9 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 			T = INLET_TEMP_F;
 			inlet_velocity_check_list[1] = 1;
 		}
-		h_m_s1 = H_L_SAT(P);
-		h_m_s0 = H_V_SAT(P);
 
-		if (h_m <= h_m_s1) {
-			rho = RHO_L(T,P);
-		}
-		else if (h_m >= h_m_s0) {
-			rho = RHO_V(T,P);
-		}
-		else {
-			rho = RHO(h_m,P);
-		}
+		rho = RHO(h_m,P);
+
 		F_PROFILE(f, t, i) = MASS_IN / (M_PI * pow(DIAMETER, 2) / 4) / rho;
 	}
 	end_f_loop(f, t)
