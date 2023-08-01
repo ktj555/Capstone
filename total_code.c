@@ -1218,16 +1218,16 @@ real dNu_VdT(real T, real P, real v) {
 	return 1.1 * (0.33 * pow(Pr_V(T, P), -0.67) * dPr_VdT(T, P) * pow(Re_V(T, P, v), 0.6) + 0.6 * pow(Pr_V(T, P), 0.33) * pow(Re_V(T, P, v), -0.4) * dRe_VdT(T, P, v));
 }
 real h_sl(real T, real P, real v) {
-	return Nu_L(T, P, v) * D_P / K_L(T, P);
+	return Nu_L(T, P, v) * K_L(T, P) / D_P;
 }
 real dh_sldT(real T, real P, real v) {
-	return (dNu_LdT(T, P, v) * K_L(T, P) - Nu_L(T, P, v) * dK_LdT(T, P)) / pow(K_L(T, P), 2) * D_P;
+	return (dNu_LdT(T, P, v) * K_L(T, P) - Nu_L(T, P, v) * dK_LdT(T, P)) / D_P;
 }
 real h_sv(real T, real P, real v) {
-	return Nu_V(T, P, v) * D_P / K_V(T, P);
+	return Nu_V(T, P, v) * K_V(T, P) / D_P;
 }
 real dh_svdT(real T, real P, real v) {
-	return (dNu_VdT(T, P, v) * K_V(T, P) - Nu_V(T, P, v) * dK_VdT(T, P)) / pow(K_V(T, P), 2) * D_P;
+	return (dNu_VdT(T, P, v) * K_V(T, P) - Nu_V(T, P, v) * dK_VdT(T, P)) / D_P;
 }
 real q_l(real T, real P, real v, real alpha, real T_s) {
 	return h_sl(T, P, v) * alpha * (T_s - T);
