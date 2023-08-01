@@ -583,10 +583,10 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s) {
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
 	if (H <= h_m_s1) {
-		return dq_ldT(H, P, v, alpha, T_s) / (dCP_LdT(T, P) * T + CP_L(T, P));
+		return dq_ldT(T, P, v, alpha, T_s) / (dCP_LdT(T, P) * T + CP_L(T, P));
 	}
 	else if (H >= h_m_s0) {
-		return dq_vdT(H, P, v, alpha, T_s) / (dCP_VdT(T, P) * (T - T_sat) + CP_V(T, P));
+		return dq_vdT(T, P, v, alpha, T_s) / (dCP_VdT(T, P) * (T - T_sat) + CP_V(T, P));
 	}
 	else {
 		return (dq_boildS(H, P, alpha, T_s) - h_sv(T, P, v) * alpha * (T_s - T_sat)) / (dLAMBDA_LdS(H, P) * H_FG(P));
