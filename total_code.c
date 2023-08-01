@@ -932,10 +932,10 @@ real RHO(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return RHO_L(T, P);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return RHO_V(T, P);
 	}
 	else {
@@ -949,10 +949,10 @@ real dRHOdS(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 0;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 0;
 	}
 	else {
@@ -966,10 +966,10 @@ real NU(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return NU_L(T, P);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return NU_V(T, P);
 	}
 	else {
@@ -983,10 +983,10 @@ real dNUdS(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 0;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 0;
 	}
 	else {
@@ -1000,10 +1000,10 @@ real MU(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return MU_L(T, P);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return MU_V(T, P);
 	}
 	else {
@@ -1017,14 +1017,14 @@ real dMUdS(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 0;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 0;
 	}
 	else {
-		return dRHOdS(H, P) * MU(H, P) + RHO(H, P) * dMUdS(H, P);
+		return dRHOdS(H, P) * NU(H, P) + RHO(H, P) * dNUdS(H, P);
 	}
 }
 real CP_F(real H, real P) {
@@ -1034,10 +1034,10 @@ real CP_F(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return CP_L(T, P);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return CP_V(T, P);
 	}
 	else {
@@ -1051,10 +1051,10 @@ real dCP_FdS(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 0;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 0;
 	}
 	else {
@@ -1068,10 +1068,10 @@ real K_F(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return K_L(T, P);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return K_V(T, P);
 	}
 	else {
@@ -1085,10 +1085,10 @@ real dK_FdS(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 0;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 0;
 	}
 	else {
@@ -1156,10 +1156,10 @@ real MY_BETA(real H, real P) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return 1;
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return 1;
 	}
 	else {
@@ -1253,10 +1253,10 @@ real qsf(real H, real P, real v, real alpha, real T_s) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return q_l(H, P, v, alpha, T_s);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return q_v(H, P, v, alpha, T_s);
 	}
 	else {
@@ -1272,10 +1272,10 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return dq_ldT(H, P, v, alpha, T_s) / (dCP_LdT(T, P) * T + CP_L(T, P));
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return dq_vdT(H, P, v, alpha, T_s) / (dCP_VdT(T, P) * (T - T_sat) + CP_V(T, P));
 	}
 	else {
@@ -1291,10 +1291,10 @@ real dqsfdT_s(real H, real P, real v, real alpha, real T_s) {
 	h_m_s1 = H_L_SAT(P);
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	if (H <= h_m_s0) {
+	if (H <= h_m_s1) {
 		return dq_ldT_s(T, P, v, alpha, T_s);
 	}
-	else if (H >= h_m_s1) {
+	else if (H >= h_m_s0) {
 		return dq_vdT_s(T, P, v, alpha, T_s);
 	}
 	else {

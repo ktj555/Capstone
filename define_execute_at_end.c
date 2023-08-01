@@ -134,6 +134,8 @@ DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_transient)	// paramter 1 : mac
 	Message("Total get               : %.8g [W]\n", energy_get_solid);
 	Message("Error                   : %.8g [W]\n",error);
 	Message("\n-------------------------------------------\n");
+
+	check_list_message();
 #endif
 
 }
@@ -247,6 +249,8 @@ DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_steady) {
 	Message("Total exchange to fluid : %.8g [W]\n", energy_to_fluid);
 	Message("Error                   : %.8g [W]\n", error);
 	Message("\n-------------------------------------------\n");
+
+	check_list_message();
 #endif
 
 }
