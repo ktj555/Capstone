@@ -170,7 +170,7 @@ real K_S(real T) {
 }
 real T_SAT(real P) {
 	real p = (P + RP_Get_Real("operating-pressure")) / 1e6;
-	real a0 = 438.69474687605754;
+	real a0 = 428.69474687605754;
 	real a1 = 11.983108526790891;
 	real a2 = -0.2940193901122584;
 	real a3 = 25.197563642164386;
