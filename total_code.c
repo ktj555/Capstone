@@ -160,7 +160,7 @@ DEFINE_INIT(initialize_saturation_and_temperature, d)
 		end_c_loop_all(c, t)
 	}
 
-	check_list_message()
+	check_list_message();
 #endif
 }
 
