@@ -1317,7 +1317,21 @@ real dqsfdT_s(real H, real P, real v, real alpha, real T_s) {
 	}
 }
 real h_inject(real H, real P, real v) {
-	return 3.66 * K_F(H,P) / D_P;
+	real h_m_s0,h_m_s1;
+	real T,S;
+	h_m_s0 = H_V_SAT(P);
+	h_m_s1 = H_L_SAT(P);
+	T = H_to_T(H,P);
+	S = H_to_S(H,P);
+	if(H<=h_m_s1){
+		return h_sl(T,P,v);
+	}
+	else if(H >= h_m_s0){
+		return h_sv(T,P,v);
+	}
+	else{
+		return S * h_sl(T,P,v) + (1-S) * h_sv(T,P,v);
+	}
 }
 
 void check_list_message(){
