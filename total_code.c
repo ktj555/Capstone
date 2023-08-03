@@ -190,6 +190,10 @@ DEFINE_ADJUST(adjust_variables, d)
 			P = C_P(c, t);
 			C_UDMI(c, t, TEMP_F) = H_to_T(h_m, P);
 			C_UDMI(c, t, SATURATION) = H_to_S(h_m, P);
+
+			if(C_UDSI(c,t,TEMP_S)<INLET_TEMP_F){
+				C_UDSI(c,t,TEMP_S)=INLET_TEMP_F;
+			}
 		}
 		end_c_loop(c, t)
 	}
