@@ -11,18 +11,18 @@
  (table)
  (myudf/box1)
  (myudf/box2)
- (myudf/real1)
- (myudf/real2)
+ (myudf/mass)
+ (myudf/heat)
  )
 
  (define (update-cb . args)
- (cx-set-real-entry myudf/real1 (rpgetvar 'myudf/mass))
- (cx-set-real-entry myudf/real2 (rpgetvar 'myudf/heat))
+ (cx-set-real-entry myudf/mass (rpgetvar 'myudf/mass))
+ (cx-set-real-entry myudf/heat (rpgetvar 'myudf/heat))
  )
 
  (define (apply-cb . args)
- (rpsetvar 'myudf/real1 (cx-show-real-entry myudf/mass))
- (rpsetvar 'myudf/real2 (cx-show-real-entry myudf/heat))
+ (rpsetvar 'myudf/mass (cx-show-real-entry myudf/mass))
+ (rpsetvar 'myudf/heat (cx-show-real-entry myudf/heat))
  (%run-udf-apply 2)
  ) 
 
@@ -33,8 +33,8 @@
  (set! table (cx-create-table dialog-box "" 'border #f 'below 0 'right-of 0))
  (set! myudf/box1 (cx-create-table table "mass box" 'row 0))
  (set! myudf/box2 (cx-create-table table "heat box" 'row 1))
- (set! myudf/real1 (cx-create-real-entry myudf/box1 "For mass" 'row 0))
- (set! myudf/real2 (cx-create-real-entry myudf/box2 "For heat" 'row 0))
+ (set! myudf/mass (cx-create-real-entry myudf/box1 "For mass" 'row 0))
+ (set! myudf/heat (cx-create-real-entry myudf/box2 "For heat" 'row 0))
  ) ;End Of Let Statement
  ) ;End Of If Statement
  ;Call To Open Dialog Box
@@ -42,7 +42,6 @@
  ) ;End Of Args Function
  ) ;End Of Let Statement
 ) ;End Of GUI-Dialog-Box Definition
-(cx-add-menu "New Menu" #f)
-(cx-add-hitem "New Menu" "New Submenu" #f #f #t #f)
-;Menu Item Added To Above Created "New Menu->New Submenu" Submenu In Fluent
-(cx-add-item "New Submenu" "MyUDF Dialog Box" #\U #f #t gui-dialog-box)
+(cx-add-menu "Control Mass and Heat" #f)
+(cx-add-hitem "Control Mass and Heat" "Mass and Heat" #f #f #t #f)
+(cx-add-item "Mass and Heat" "setup Box" #\U #f #t gui-dialog-box)
