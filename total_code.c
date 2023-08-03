@@ -4,8 +4,6 @@
 #define MY_SIGMA 0.072
 #define MY_C_SF 0.006
 #define INLET_TEMP_F 303.15
-#define MASS_IN 0.001
-#define Q_IN 1e3
 #define D_P 100e-6
 #define DIAMETER 0.06
 
@@ -29,6 +27,10 @@ static int inlet_enthalpy_check_list[6] = {0,0,0,0,0,0};
 static int inlet_temp_s_check_list[5] = {0,0,0,0,0};
 static int inlet_velocity_check_list[2] = {0,0};
 static int porosity_and_permeability_check_list[2] = {0,0};
+
+
+static real MASS_IN=0.0;
+static real Q_IN=0.0;
 
 // fluid dynamics properties for each phases
 real RHO_L(real T, real P);
@@ -136,6 +138,12 @@ DEFINE_EXECUTE_ON_LOADING(set_load, libname)
 	Set_User_Memory_Name(SATURATION, "Saturation");
 	Set_User_Memory_Name(SOURCE_F, "Source_in_fiuld");
 	Set_User_Memory_Name(SOURCE_S, "Source_in_solid");
+}
+
+DEFINE_EXECUTE_FROM_GUI(mass_and_heat,libname,mode){
+    MASS_IN = RP_Get_Real("myudf/mass");
+    Q_IN = RP_Get_Real("myudf/heat");
+    Message("%g,%g\n",MASS_IN,Q_IN);
 }
 
 DEFINE_INIT(initialize_saturation_and_temperature, d)
