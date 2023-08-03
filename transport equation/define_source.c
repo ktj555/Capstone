@@ -17,8 +17,8 @@ DEFINE_SOURCE(Source_for_solid, c, t, dS, eqn)
 	NV_D(psi, =, C_U(c, t), C_V(c, t), C_W(c, t));
 	v = NV_MAG(psi);
 
-	source = -qsf(H, P, v, alpha_sf, T_s);
-	dS[eqn] = -dqsfdT_s(H, P, v, alpha_sf, T_s);
+	source = -qsf(h_m, P, v, alpha_sf, T_s);
+	dS[eqn] = -dqsfdT_s(h_m, P, v, alpha_sf, T_s);
 	C_UDMI(c, t, SOURCE_S) = source;
 	return source;
 }
@@ -41,8 +41,8 @@ DEFINE_SOURCE(Source_for_fluid, c, t, dS, eqn)
 	NV_D(psi, =, C_U(c, t), C_V(c, t), C_W(c, t));
 	v = NV_MAG(psi);
 
-	source = qsf(H, P, v, alpha_sf, T_s);
-	dS[eqn] = dqsfdH(H, P, v, alpha_sf, T_s);
+	source = qsf(h_m, P, v, alpha_sf, T_s);
+	dS[eqn] = dqsfdH(h_m, P, v, alpha_sf, T_s);
 	C_UDMI(c, t, SOURCE_F) = source;
 	return source;
 }

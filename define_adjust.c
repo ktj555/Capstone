@@ -16,6 +16,7 @@ DEFINE_ADJUST(adjust_variables, d) // parameter 1 : macro name | 2 : domain poin
 
 	real P;			// 계산에 필요한 Cell의 압력을 저장하기 위한 변수
 	real h_m;		// 계산에 필요한 Enthalpy를 저장하기 위한 변수
+	real T_f, T_s;
 
 	thread_loop_c(t, d) {	// domain에 포함된 cell thread를 하나씩 불러와 t에 부여하고 루프를 진행
 		begin_c_loop(c, t)	// cell thread에 포함된 cell을 하나씩 불러와 c에 부여하고 루프를 진행
@@ -24,10 +25,6 @@ DEFINE_ADJUST(adjust_variables, d) // parameter 1 : macro name | 2 : domain poin
 			P = C_P(c, t);								// Thread t에 포함된 c가 지정하는 Cell에 저장되어있는 압력값 호출
 			C_UDMI(c, t, TEMP_F) = H_to_T(h_m, P);		// Thread t에 포함된 c가 지정하는 Cell에 저장되어 있는 UDM 중 TEMP_F번째에 저장된 값을 설정
 			C_UDMI(c, t, SATURATION) = H_to_S(h_m, P);	// Thread t에 포함된 c가 지정하는 Cell에 저장되어 있는 UDM 중 SATURATION번째에 저장된 값을 설정
-
-			if(C_UDSI(c,t,TEMP_S)<INLET_TEMP_F){
-				C_UDSI(c,t,TEMP_S)=INLET_TEMP_F;
-			}
 		}
 		end_c_loop(c, t)
 	}
