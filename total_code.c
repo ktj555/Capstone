@@ -171,8 +171,8 @@ DEFINE_INIT(initialize_saturation_and_temperature, d)
 		{
 			C_CENTROID(cen,c,t);
 			x = cen[0];
-			C_UDSI(c, t, MODIFIED_ENTHALPY) = h_in + h_out * (x - THICKNESS * 0.5) / THICKNESS;
-			C_UDSI(c, t, TEMP_S) = H_to_T(h_in + h_out * (x - THICKNESS * 0.5) / THICKNESS, 0);
+			C_UDSI(c, t, MODIFIED_ENTHALPY) = h_in + (h_out - h_in) / THICKNESS * (x + THICKNESS * 0.5);
+			C_UDSI(c, t, TEMP_S) = H_to_T(h_in + (h_out - h_in) / THICKNESS * (x + THICKNESS * 0.5), 0);
 
 			C_UDMI(c, t, MY_POROSITY) = 0.3;
 			C_UDMI(c, t, PERMEABILITY) = 3.67e-12;
