@@ -16,8 +16,8 @@ DEFINE_INIT(initialize_saturation_and_temperature, d) // parameter 1 : macro nam
 	real x;
 	real cen[ND_ND];
 
-	q_in = RP_Get_Real("myudf/mass");
-	mass_in = RP_Get_Real("myudf/heat");
+	q_in = RP_Get_Real("myudf/heat");
+	mass_in = RP_Get_Real("myudf/mass");
 	A = M_PI * pow(DIAMETER, 2) / 4;
 	h_in = CP_L(INLET_TEMP_F, 0) * INLET_TEMP_F;
 	h_out = h_in + q_in/(mass_in/A);
