@@ -76,7 +76,7 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 		// face에서 불러온 변수들을 바탕으로 계산에 필요한 값들을 저장
 		T = H_to_T(h_m, P);
 		k_f_eff = e * K_F(h_m, P);
-		h_c = h_inject(h_m, P, v);
+		h_c = h_inject(h_m, P, ABS(v));
 		h_m_s0 = H_V_SAT(P);
 		h_m_s1 = H_L_SAT(P);
 
@@ -107,7 +107,7 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 	real h_c;
 	real e, k_s_eff;
 
-	m_flux = MASS_IN / (3.14 * pow(DIAMETER, 2) / 4);
+	m_flux = MASS_IN / (M_PI * pow(DIAMETER, 2) / 4);
 
 	begin_f_loop(f, t)
 	{
@@ -147,7 +147,7 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 			inlet_temp_s_check_list[4]=1;
 		}
 		T = H_to_T(h_m, P);
-		h_c = h_inject(h_m, P, v);
+		h_c = h_inject(h_m, P, ABS(v));
 		k_s_eff = (1 - e) * K_S(T_s);
 
 		F_PROFILE(f, t, i) = -h_c * (T_s - T);

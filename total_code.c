@@ -6,6 +6,7 @@
 #define INLET_TEMP_F 303.15
 #define D_P 100e-6
 #define DIAMETER 0.06
+#define THICKNESS 0.008
 
 // Gravity
 #define G_X -9.81
@@ -153,11 +154,25 @@ DEFINE_INIT(initialize_saturation_and_temperature, d)
 	cell_t c;
 	Thread* t;
 
+	real q_in, mass_in;
+	real h_in, h_out, A;
+	real x;
+	real cen[ND_ND];
+
+	q_in = RP_Get_Real("myudf/mass");
+	mass_in = RP_Get_Real("myudf/heat");
+	A = M_PI * pow(DIAMETER, 2) / 4;
+	h_in = CP_L(INLET_TEMP_F, 0) * INLET_TEMP_F;
+	h_out = h_in + q_in/(mass_in/A);
+
+
 	thread_loop_c(t, d) {
 		begin_c_loop_all(c, t)
 		{
-			C_UDSI(c, t, MODIFIED_ENTHALPY) = CP_L(INLET_TEMP_F, C_P(c, t)) * INLET_TEMP_F;
-			C_UDSI(c, t, TEMP_S) = INLET_TEMP_F;
+			C_CENTROID(cen,c,t);
+			x = cen[0];
+			C_UDSI(c, t, MODIFIED_ENTHALPY) = h_in + h_out * x / THICKNESS;
+			C_UDSI(c, t, TEMP_S) = H_to_T(h_in + h_out * x / THICKNESS, 0);
 
 			C_UDMI(c, t, MY_POROSITY) = 0.3;
 			C_UDMI(c, t, PERMEABILITY) = 3.67e-12;
@@ -538,7 +553,7 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 	real h_c;
 	real e, k_s_eff;
 
-	m_flux = MASS_IN / (3.14 * pow(DIAMETER, 2) / 4);
+	m_flux = MASS_IN / (M_PI * pow(DIAMETER, 2) / 4);
 
 	begin_f_loop(f, t)
 	{
