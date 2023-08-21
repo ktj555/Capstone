@@ -835,6 +835,7 @@ real dK_FdS(real H, real P) {
 real LAMBDA_L(real H, real P) {
 	real T;
 	T = H_to_T(H,P);
+	S = H_to_S(H,P);
 	return NU(H, P) / NU_L(T, P) * K_RL(S);
 }
 real dLAMBDA_LdS(real H, real P) {
