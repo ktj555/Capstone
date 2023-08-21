@@ -29,7 +29,6 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 		}
 		else{
 			P = 0;
-			inlet_enthalpy_check_list[0] = 1;
 		}
 		if(NNULLP(THREAD_STORAGE(tc,SV_P_G))){
 			dPdx = C_P_G(c,tc)[0];
@@ -42,35 +41,30 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)	// paramter 1 : macro name | 2 : thread poi
 		}
 		else{
 			v = m_flux / 998.0;
-			inlet_enthalpy_check_list[1] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {	// face thread t에서 UDS의 주소를 반한화여 Null인지 아닌지 판단
 			T_s = F_UDSI(f, t, TEMP_S);						// Null이 아니라면 메모리에 할당되어 접근 가능한 상태이므로 값을 호출
 		}
 		else {												// Null 이라면 메모리에 할당되지 않아 접근 불가능한 상태이므로 기본값 할당
 			T_s = INLET_TEMP_F;
-			inlet_enthalpy_check_list[2] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {			// face thread t에서 UDM의 주소를 반환하여 Null인지 아닌지 판단
 			e = F_UDMI(f, t, MY_POROSITY);					// Null이 아니라면 메모리에 할당되어 접근 가능한 상태이므로 값을 호출
 		}
 		else {												// Null 이라면 메모리에 할당되지 않아 접근 불가능한 상태이므로 기본값 할당
 			e = 1.0;
-			inlet_enthalpy_check_list[3] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f, t, MODIFIED_ENTHALPY);
 		}
 		else {
 			h_m = h_in;
-			inlet_enthalpy_check_list[4] = 1;
 		}
 		if (NNULLP(T_STORAGE_R_NV(tc, SV_UDSI_G(MODIFIED_ENTHALPY)))) {
 			dhdx = C_UDSI_G(c, tc, MODIFIED_ENTHALPY)[0];
 		}
 		else {
 			dhdx = 0.0;
-			inlet_enthalpy_check_list[5] = 1;
 		}
 		h_in = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;	// reservoir coolant Enthalpy
 		// face에서 불러온 변수들을 바탕으로 계산에 필요한 값들을 저장
@@ -116,35 +110,30 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 		}
 		else{
 			P = 0;
-			inlet_temp_s_check_list[0]=1;
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
 			v = F_U(f,t);
 		}
 		else{
 			v = m_flux / 998.0;
-			inlet_temp_s_check_list[1]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {
 			T_s = F_UDSI(f, t, TEMP_S);
 		}
 		else {
 			T_s = INLET_TEMP_F;
-			inlet_temp_s_check_list[2]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {
 			e = F_UDMI(f, t, MY_POROSITY);
 		}
 		else {
 			e = 1.0;
-			inlet_temp_s_check_list[3]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f, t, MODIFIED_ENTHALPY);
 		}
 		else {
 			h_m = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;
-			inlet_temp_s_check_list[4]=1;
 		}
 		T = H_to_T(h_m, P);
 		h_c = h_inject(h_m, P, ABS(v));
@@ -170,7 +159,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 		}
 		else{
 			P = 0;
-			inlet_velocity_check_list[0] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f,t,MODIFIED_ENTHALPY);
@@ -179,7 +167,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 		else {
 			h_m = INLET_TEMP_F * CP_L(INLET_TEMP_F,P);
 			T = INLET_TEMP_F;
-			inlet_velocity_check_list[1] = 1;
 		}
 
 		rho = RHO(h_m,P);
@@ -212,7 +199,6 @@ DEFINE_PROFILE(porosity, t, i) {
 		}
 		else {
 			C_PROFILE(c, t, i) = 1.0;
-			porosity_and_permeability_check_list[0] = 1;
 		}
 	}
 	end_c_loop(c,t)
@@ -228,7 +214,6 @@ DEFINE_PROFILE(permeability_resistence, t, i) {
 		}
 		else {
 			C_PROFILE(c, t, i) = 2.11e10;
-			porosity_and_permeability_check_list[1] = 1;
 		}
 	}
 	end_c_loop(c,t)

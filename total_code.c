@@ -24,12 +24,6 @@
 #define SOURCE_F 4
 #define SOURCE_S 5
 
-static int inlet_enthalpy_check_list[6] = {0,0,0,0,0,0};
-static int inlet_temp_s_check_list[5] = {0,0,0,0,0};
-static int inlet_velocity_check_list[2] = {0,0};
-static int porosity_and_permeability_check_list[2] = {0,0};
-
-
 static real MASS_IN=0.0;
 static real Q_IN=0.0;
 
@@ -184,8 +178,6 @@ DEFINE_INIT(initialize_saturation_and_temperature, d)
 		}
 		end_c_loop_all(c, t)
 	}
-
-	check_list_message();
 #endif
 }
 
@@ -212,250 +204,6 @@ DEFINE_ADJUST(adjust_variables, d)
 #endif
 }
 
-
-DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_transient)
-{
-	real energy_in_solid=0.0, energy_out_solid=0.0, energy_get_solid=0.0, energy_to_fluid=0.0, error=0.0;
-
-	int BC_in = 5;	// inlet boundary face ID
-	int BC_out = 6;	// outlet boundary face ID
-
-#if !RP_HOST
-	Domain* d;
-	Thread* t;
-	Thread* ti;
-	Thread* to;
-	Thread* tc;
-
-	cell_t c;
-	face_t f;
-
-	real P;
-	real h_m;
-
-	real dt;
-	real sum_of_solid_U = 0.0, sum_of_solid_U_old = 0.0;
-
-	real dtdx;
-	real area;
-	real A[ND_ND];
-#endif
-
-#if !RP_HOST
-	dt = RP_Get_Real("physical-time-step");
-	d = Get_Domain(1);
-	ti = Lookup_Thread(d, BC_in);
-	to = Lookup_Thread(d, BC_out);
-#endif
-
-#if !RP_HOST
-	thread_loop_c(t, d) {
-		begin_c_loop(c, t)
-		{
-			sum_of_solid_U += C_UDSI(c, t, TEMP_S) * C_VOLUME(c, t) * CP_S(C_UDSI(c, t, TEMP_S)) * (1 - C_UDMI(c,t,MY_POROSITY));
-			sum_of_solid_U_old += C_UDSI_M1(c, t, TEMP_S) * C_VOLUME(c, t) * CP_S(C_UDSI_M1(c, t, TEMP_S)) * (1 - C_UDMI(c, t, MY_POROSITY));
-
-			energy_to_fluid += C_UDMI(c, t, SOURCE_F) * C_VOLUME(c, t);
-		}
-		end_c_loop(c,t)
-	}
-
-	energy_get_solid = sum_of_solid_U - sum_of_solid_U_old;
-	energy_get_solid /= dt;
-#endif
-
-#if !RP_HOST
-	begin_f_loop(f, to)
-	{
-		if(PRINCIPAL_FACE_P(f,to)){
-			c = F_C0(f, to);
-			tc = THREAD_T0(to);
-			F_AREA(A, f, to);
-			area = NV_MAG(A);
-			dtdx = C_UDSI_G(c, tc, TEMP_S)[0];
-			energy_in_solid += area * K_S(F_UDSI(f, ti, TEMP_S)) * (1 - C_UDMI(c, t, MY_POROSITY)) * dtdx;
-		}	
-	}
-	end_f_loop(f, to)
-#endif
-
-#if !RP_HOST
-	begin_f_loop(f, ti) 
-	{
-		if(PRINCIPAL_FACE_P(f,ti)){
-			c = F_C0(f, ti);
-			tc = THREAD_T0(ti);
-			F_AREA(A, f, ti);
-			area = NV_MAG(A);
-			dtdx = C_UDSI_G(c, tc, TEMP_S)[0];
-			energy_out_solid += area * K_S(F_UDSI(f, to, TEMP_S)) * dtdx * (1 - C_UDMI(c, t, MY_POROSITY));
-		}
-
-	}
-	end_f_loop(f, ti)
-#endif
-
-#if !RP_HOST
-	error = energy_in_solid + energy_out_solid + energy_get_solid - energy_to_fluid;
-
-	Message("\n\nCompute each node value\n");
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n");
-	Message("outlet    : %.8g [W]\n",energy_in_solid);
-	Message("inlet    : %.8g [W]\n", energy_out_solid);
-	Message("exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("get               : %.8g [W]\n", energy_get_solid);
-	Message("Error                   : %.8g [W]\n",error);
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n\n\n");
-
-	energy_in_solid = PRF_GRSUM1(energy_in_solid);
-	energy_out_solid = PRF_GRSUM1(energy_out_solid);
-	energy_get_solid = PRF_GRSUM1(energy_get_solid);
-	energy_to_fluid = PRF_GRSUM1(energy_to_fluid);
-	error = PRF_GRSUM1(error);
-
-	Message("\n\nAfter Summing\n");
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n");
-	Message("outlet    : %.8g [W]\n",energy_in_solid);
-	Message("inlet    : %.8g [W]\n", energy_out_solid);
-	Message("exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("get               : %.8g [W]\n", energy_get_solid);
-	Message("Error                   : %.8g [W]\n",error);
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n\n\n");
-
-#endif
-
-	node_to_host_real_5(energy_in_solid, energy_out_solid, energy_get_solid, energy_to_fluid, error);
-
-#if RP_HOST
-	Message("\n-------------------------------------------\n");
-	Message("Energy balance at solid\n\n");
-	Message("Total in from outlet    : %.8g [W]\n",energy_in_solid);
-	Message("Total out from inlet    : %.8g [W]\n", energy_out_solid);
-	Message("Total exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("Total get               : %.8g [W]\n", energy_get_solid);
-	Message("Error                   : %.8g [W]\n",error);
-	Message("\n-------------------------------------------\n");
-
-	check_list_message();
-#endif
-
-}
-
-DEFINE_EXECUTE_AT_END(calculate_energy_balance_vr_steady) {
-
-	real energy_in_solid=0.0, energy_out_solid=0.0, energy_to_fluid=0.0, error=0.0;
-
-	int BC_in = 5;
-	int BC_out = 6;
-
-#if !RP_HOST
-	Domain* d;
-	Thread* t;
-	Thread* ti;
-	Thread* to;
-	Thread* tc;
-
-	cell_t c;
-	face_t f;
-
-	real P;
-	real h_m;
-
-	real dtdx;
-	real area;
-	real A[ND_ND];
-#endif
-
-#if !RP_HOST
-	d = Get_Domain(1);
-	ti = Lookup_Thread(d, BC_in);
-	to = Lookup_Thread(d, BC_out);
-#endif
-
-#if !RP_HOST
-	thread_loop_c(t, d) {
-		begin_c_loop(c, t)
-		{
-			energy_to_fluid += C_UDMI(c, t, SOURCE_F) * C_VOLUME(c, t);
-		}
-		end_c_loop(c, t)
-	}
-#endif
-
-#if !RP_HOST
-	begin_f_loop(f, to)
-	{
-		if(PRINCIPAL_FACE_P(f,to)){
-			c = F_C0(f, to);
-			tc = THREAD_T0(to);
-			F_AREA(A, f, to);
-			area = NV_MAG(A);
-			dtdx = C_UDSI_G(c, tc, TEMP_S)[0];
-			energy_in_solid += area * K_S(F_UDSI(f, ti, TEMP_S)) * dtdx * (1 - C_UDMI(c, t, MY_POROSITY));
-		}
-
-	}
-	end_f_loop(f, to)
-#endif
-
-#if !RP_HOST
-	begin_f_loop(f, ti)
-	{
-		if(PRINCIPAL_FACE_P(f,ti)){
-			c = F_C0(f, ti);
-			tc = THREAD_T0(ti);
-			F_AREA(A, f, ti);
-			area = NV_MAG(A);
-			dtdx = C_UDSI_G(c, tc, TEMP_S)[0];
-			energy_out_solid += area * K_S(F_UDSI(f, to, TEMP_S)) * dtdx * (1 - C_UDMI(c, t, MY_POROSITY));
-		}
-
-	}
-	end_f_loop(f, ti)
-#endif
-
-#if !RP_HOST
-	error = energy_in_solid + energy_out_solid - energy_to_fluid;
-
-	Message("\n\nCompute each node value\n");
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n");
-	Message("outlet    : %.8g [W]\n",energy_in_solid);
-	Message("inlet    : %.8g [W]\n", energy_out_solid);
-	Message("exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("Error                   : %.8g [W]\n",error);
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n\n\n");
-
-	energy_in_solid = PRF_GRSUM1(energy_in_solid);
-	energy_out_solid = PRF_GRSUM1(energy_out_solid);
-	energy_to_fluid = PRF_GRSUM1(energy_to_fluid);
-	error = PRF_GRSUM1(error);
-
-	Message("\n\nAfter Summing\n");
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n");
-	Message("outlet    : %.8g [W]\n",energy_in_solid);
-	Message("inlet    : %.8g [W]\n", energy_out_solid);
-	Message("exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("Error                   : %.8g [W]\n",error);
-	Message("\n- - - - - - - - - - - - - - - - - - - - - -\n\n\n");
-
-#endif
-
-	node_to_host_real_4(energy_in_solid, energy_out_solid, energy_to_fluid, error);
-
-#if RP_HOST
-	Message("\n-------------------------------------------\n");
-	Message("Energy balance at solid\n\n");
-	Message("Total in from outlet    : %.8g [W]\n", energy_in_solid);
-	Message("Total out from inlet    : %.8g [W]\n", energy_out_solid);
-	Message("Total exchange to fluid : %.8g [W]\n", energy_to_fluid);
-	Message("Error                   : %.8g [W]\n", error);
-	Message("\n-------------------------------------------\n");
-
-	check_list_message();
-#endif
-
-}
-
 DEFINE_PROFILE(inlet_enthalpy, t, i)
 {
 	Thread* tc;
@@ -480,7 +228,6 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 		}
 		else{
 			P = 0;
-			inlet_enthalpy_check_list[0] = 1;
 		}
 		if(NNULLP(THREAD_STORAGE(tc,SV_P_G))){
 			dPdx = C_P_G(c,tc)[0];
@@ -493,35 +240,30 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 		}
 		else{
 			v = m_flux / 998.0;
-			inlet_enthalpy_check_list[1] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {
 			T_s = F_UDSI(f, t, TEMP_S);
 		}
 		else {
 			T_s = INLET_TEMP_F;
-			inlet_enthalpy_check_list[2] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {
 			e = F_UDMI(f, t, MY_POROSITY);
 		}
 		else {
 			e = 1.0;
-			inlet_enthalpy_check_list[3] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f, t, MODIFIED_ENTHALPY);
 		}
 		else {
 			h_m = h_in;
-			inlet_enthalpy_check_list[4] = 1;
 		}
 		if (NNULLP(T_STORAGE_R_NV(tc, SV_UDSI_G(MODIFIED_ENTHALPY)))) {
 			dhdx = C_UDSI_G(c, tc, MODIFIED_ENTHALPY)[0];
 		}
 		else {
 			dhdx = 0.0;
-			inlet_enthalpy_check_list[5] = 1;
 		}
 		h_in = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;
 		T = H_to_T(h_m, P);
@@ -562,35 +304,30 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 		}
 		else{
 			P = 0;
-			inlet_temp_s_check_list[0]=1;
 		}
 		if(NNULLP(THREAD_STORAGE(t,SV_U))){
 			v = F_U(f,t);
 		}
 		else{
 			v = m_flux / 998.0;
-			inlet_temp_s_check_list[1]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(TEMP_S)))) {
 			T_s = F_UDSI(f, t, TEMP_S);
 		}
 		else {
 			T_s = INLET_TEMP_F;
-			inlet_temp_s_check_list[2]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDM_I))) {
 			e = F_UDMI(f, t, MY_POROSITY);
 		}
 		else {
 			e = 1.0;
-			inlet_temp_s_check_list[3]=1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f, t, MODIFIED_ENTHALPY);
 		}
 		else {
 			h_m = CP_L(INLET_TEMP_F, P) * INLET_TEMP_F;
-			inlet_temp_s_check_list[4]=1;
 		}
 		T = H_to_T(h_m, P);
 		h_c = h_inject(h_m, P, v);
@@ -624,7 +361,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 		else {
 			h_m = INLET_TEMP_F * CP_L(INLET_TEMP_F,P);
 			T = INLET_TEMP_F;
-			inlet_velocity_check_list[1] = 1;
 		}
 		h_m_s1 = H_L_SAT(P);
 		h_m_s0 = H_V_SAT(P);
@@ -662,7 +398,6 @@ DEFINE_PROFILE(porosity, t, i) {
 		}
 		else {
 			C_PROFILE(c, t, i) = 1.0;
-			porosity_and_permeability_check_list[0] = 1;
 		}
 	}
 	end_c_loop(c,t)
@@ -676,7 +411,6 @@ DEFINE_PROFILE(permeability_resistence, t, i) {
 		}
 		else {
 			C_PROFILE(c, t, i) = 2.11e10;
-			porosity_and_permeability_check_list[1] = 1;
 		}
 	}
 	end_c_loop(c,t)
@@ -1315,88 +1049,5 @@ real h_inject(real H, real P, real v) {
 	}
 	else{
 		return S * h_sl(T,P,v) + (1-S) * h_sv(T,P,v);
-	}
-}
-
-void check_list_message(){
-
-	int check = 0;
-
-	if(inlet_enthalpy_check_list[0]==1){
-		Message("\nAccess Error : Pressure | inlet | during inlet enthalpy\n");
-		check = 1;
-	}
-	if(inlet_enthalpy_check_list[1]==1){
-		Message("\nAccess Error : Velocity | inlet | during inlet enthalpy\n");
-		check = 1;
-	}
-	if(inlet_enthalpy_check_list[2]==1){
-		Message("\nAccess Error : Solid temperature | inlet | during inlet enthalpy\n");
-		check = 1;
-	}
-	if(inlet_enthalpy_check_list[3]==1){
-		Message("\nAccess Error : UDM | inlet | during inlet enthalpy\n");
-		check = 1;
-	}
-	if(inlet_enthalpy_check_list[4]==1){
-		Message("\nAccess Error : Modified Enthalpy | inlet | during inlet enthalpy\n");
-			check = 1;
-	}
-	if(inlet_enthalpy_check_list[5]==1){
-		Message("\nAccess Error : Enthalpy Gradient | inlet | during inlet enthalpy\n");
-		check = 1;
-	}
-	if(inlet_temp_s_check_list[0]==1){
-		Message("\nAccess Error : Pressure | inlet | during inlet flux solid\n");
-		check = 1;
-	}
-	if(inlet_temp_s_check_list[1]==1){
-		Message("\nAccess Error : Velocity | inlet | during inlet flux solid\n");
-		check = 1;
-	}
-	if(inlet_temp_s_check_list[2]==1){
-		Message("\nAccess Error : Solid temperature | inlet | during flux solid\n");
-		check = 1;
-	}
-	if(inlet_temp_s_check_list[3]==1){
-		Message("\nAccess Error : UDM | inlet | during flux solid\n");
-		check = 1;
-	}
-	if(inlet_temp_s_check_list[4]==1){
-		Message("\nAccess Error : Modified Enthalpy | inlet | during flux solid\n");
-		check = 1;
-	}
-	if(inlet_velocity_check_list[0]==1){
-		Message("\nAccess Error : Pressure | inlet | during inlet velocity\n");
-		check = 1;
-	}
-	if(inlet_velocity_check_list[1]==1){
-		Message("\nAccess Error : Modified Enthalpy | inlet | during inlet velocity\n");
-		check = 1;
-	}
-	if(porosity_and_permeability_check_list[0]==1){
-		Message("\nAccess Error : Porosity | cell zone | during cell zone condition\n");
-		check = 1;
-	}
-	if(porosity_and_permeability_check_list[1]==1){
-		Message("\nAccess Error : Resistence | cell zone | during cell zone condition\n");
-		check = 1;
-	}
-	
-	if(check == 0){
-		Message("\nAll access \n");
-	}
-
-	for(int i = 0; i<6;i++){
-		inlet_enthalpy_check_list[i]=0;
-	}
-	for(int i = 0; i<5;i++){
-		inlet_temp_s_check_list[i]=0;
-	}
-	for(int i = 0; i<2;i++){
-		inlet_velocity_check_list[i]=0;
-	}
-	for(int i = 0; i<2;i++){
-		porosity_and_permeability_check_list[i]=0;
 	}
 }
