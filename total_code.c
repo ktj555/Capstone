@@ -833,7 +833,7 @@ real dK_FdS(real H, real P) {
 	}
 }
 real LAMBDA_L(real H, real P) {
-	real T,S;
+	real T, S;
 	T = H_to_T(H,P);
 	S = H_to_S(H,P);
 	return NU(H, P) / NU_L(T, P) * K_RL(S);
@@ -969,7 +969,9 @@ real q_boil(real H, real P, real alpha, real T_s) {
 	return S * alpha * MU(H, P) * H_FG(P) * sqrt(G * (RHO_L(T, P) - RHO_V(T, P)) / MY_SIGMA) * pow(CP_L(T, P) * (T_s - T_SAT(P)) / (MY_C_SF * H_FG(P) * Pr_L(T, P)), 3);
 }
 real dq_boildS(real H, real P, real alpha, real T_s) {
-	return q_boil(H, S, alpha, T_s) / S + q_boil(H, S, alpha, T_s) / MU(H, P) * dMUdS(H, P);
+	real S;
+	S = H_to_S(H,P);
+	return q_boil(H, P, alpha, T_s) / S + q_boil(H, P, alpha, T_s) / MU(H, P) * dMUdS(H, P);
 }
 real dq_boildT_s(real H, real P, real alpha, real T_s) {
 	return q_boil(H, P, alpha, T_s) * 3 / (T_s - T_SAT(P));
