@@ -350,7 +350,6 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 		}
 		else{
 			P = 0;
-			inlet_velocity_check_list[0] = 1;
 		}
 		if (NNULLP(THREAD_STORAGE(t, SV_UDS_I(MODIFIED_ENTHALPY)))) {
 			h_m = F_UDSI(f,t,MODIFIED_ENTHALPY);
