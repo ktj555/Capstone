@@ -9,8 +9,7 @@
 #define THICKNESS 0.008
 
 // Gravity
-#define G_X -9.81
-#define G_Y 0
+#define G 9.81
 
 // User Define Scalar Index
 #define MODIFIED_ENTHALPY 0
@@ -119,7 +118,6 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s);
 real dqsfdT_s(real H, real P, real v, real alpha, real T_s);
 
 real h_inject(real H, real P, real v);
-void check_list_message();
 
 // Set UDS & UDM names for GUI
 DEFINE_EXECUTE_ON_LOADING(set_load, libname)
@@ -488,10 +486,10 @@ DEFINE_DIFFUSIVITY(Diffusivity_for_fluid, c, t, i)
 	e = C_UDMI(c, t, MY_POROSITY);
 
 	if (h_m <= h_m_s1) {
-		return e * K_F(h_m, P) / CP_L(T, P);
+		return e * K_L(T, P) / CP_L(T, P);
 	}
 	else if (h_m >= h_m_s0) {
-		return e * K_F(h_m, P) / CP_V(T, P);
+		return e * K_V(T, P) / CP_V(T, P);
 	}
 	else {
 		real nu, lambda, K, dlds, dnuds;
@@ -499,8 +497,7 @@ DEFINE_DIFFUSIVITY(Diffusivity_for_fluid, c, t, i)
 		nu = NU(h_m, P);
 		lambda = LAMBDA_L(h_m, P);
 		D = K / nu * lambda * (1 - lambda) * sqrt(e / K) * MY_SIGMA * (1.417 - 2 * 2.120 * (1 - S) + 3 * 1.263 * pow(1 - S, 2));
-		dnuds = 3 * pow(nu, 2) * (pow(1 - S, 2) / NU_V(T, P) - pow(S, 2) / NU_L(T, P));
-		dlds = (dnuds * pow(S, 3) + 3 * nu * pow(S, 2)) / NU_L(T, P);
+		dlds = dLAMBDA_LdS(h_m,P);
 		return D / dlds;
 	}
 }
@@ -550,7 +547,6 @@ DEFINE_SOURCE(Source_for_fluid, c, t, dS, eqn)
 	return source;
 }
 
-
 real RHO_L(real T, real P) {
 	return 998.0;
 }
@@ -580,7 +576,7 @@ real MU_V(real T, real P) {
 	return a0 + a1 * T;
 }
 real dMU_VdT(real T, real P) {
-	real a1 = 40.35e-6;
+	real a1 = 40.35e-9;
 	return a1;
 }
 real NU_L(real T, real P) {
@@ -623,6 +619,7 @@ real K_V(real T, real P) {
 }
 real dK_VdT(real T, real P) {
 	real a1 = 118.42e-6;
+	return a1;
 }
 real K_S(real T) {
 	return 21.7;
@@ -664,8 +661,8 @@ real H_to_T(real h, real P) {
 	h_m_s0 = H_V_SAT(P);
 	T = T_SAT(P);
 	// if cp_l is not constant, need modification
-	if (h < h_m_s1) { return h / CP_L(T, P); }
-	else if (h > h_m_s0) { return T + (h - h_m_s0) / CP_V(T, P); }
+	if (h <= h_m_s1) { return h / CP_L(T, P); }
+	else if (h >= h_m_s0) { return T + (h - h_m_s0) / CP_V(T, P); }
 	else { return T; }
 }
 real H_to_S(real h, real P) {
@@ -969,7 +966,7 @@ real q_boil(real H, real P, real alpha, real T_s) {
 	real T, S;
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	return S * alpha * MU(H, P) * H_FG(P) * sqrt(sqrt(G_X * G_X + G_Y * G_Y) * (RHO_L(T, P) - RHO_V(T, P)) / MY_SIGMA) * pow(CP_L(T, P) * (T_s - T_SAT(P)) / (MY_C_SF * H_FG(P) * Pr_L(T, P)), 3);
+	return S * alpha * MU(H, P) * H_FG(P) * sqrt(G * (RHO_L(T, P) - RHO_V(T, P)) / MY_SIGMA) * pow(CP_L(T, P) * (T_s - T_SAT(P)) / (MY_C_SF * H_FG(P) * Pr_L(T, P)), 3);
 }
 real dq_boildS(real H, real P, real alpha, real T_s) {
 	return q_boil(H, S, alpha, T_s) / S + q_boil(H, S, alpha, T_s) / MU(H, P) * dMUdS(H, P);
@@ -1012,7 +1009,7 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s) {
 		return dq_vdT(T, P, v, alpha, T_s) / (dCP_VdT(T, P) * (T - T_sat) + CP_V(T, P));
 	}
 	else {
-		return (dq_boildS(H, P, alpha, T_s) - h_sv(T, P, v) * alpha * (T_s - T_sat)) / (dLAMBDA_LdS(H, P) * H_FG(P));
+		return (dq_boildS(H, P, alpha, T_s) - h_sv(T, P, v) * alpha * (T_s - T_sat)) / (-dLAMBDA_LdS(H, P) * H_FG(P));
 	}
 }
 real dqsfdT_s(real H, real P, real v, real alpha, real T_s) {

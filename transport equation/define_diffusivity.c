@@ -19,10 +19,10 @@ DEFINE_DIFFUSIVITY(Diffusivity_for_fluid, c, t, i)
 	e = C_UDMI(c, t, MY_POROSITY);
 
 	if (h_m <= h_m_s1) {
-		return e * K_F(h_m, P) / CP_L(T, P);
+		return e * K_L(T, P) / CP_L(T, P);
 	}
 	else if (h_m >= h_m_s0) {
-		return e * K_F(h_m, P) / CP_V(T, P);
+		return e * K_V(T, P) / CP_V(T, P);
 	}
 	else {
 		real nu, lambda, K, dlds, dnuds;
@@ -30,8 +30,7 @@ DEFINE_DIFFUSIVITY(Diffusivity_for_fluid, c, t, i)
 		nu = NU(h_m, P);
 		lambda = LAMBDA_L(h_m, P);
 		D = K / nu * lambda * (1 - lambda) * sqrt(e / K) * MY_SIGMA * (1.417 - 2 * 2.120 * (1 - S) + 3 * 1.263 * pow(1 - S, 2));
-		dnuds = 3 * pow(nu, 2) * (pow(1 - S, 2) / NU_V(T, P) - pow(S, 2) / NU_L(T, P));
-		dlds = (dnuds * pow(S, 3) + 3 * nu * pow(S, 2)) / NU_L(T, P);
+		dlds = dLAMBDA_LdS(h_m,P);
 		return D / dlds;
 	}
 }

@@ -90,7 +90,6 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s);
 real dqsfdT_s(real H, real P, real v, real alpha, real T_s);
 
 real h_inject(real H, real P, real v);
-void check_list_message();
 
 real RHO_L(real T, real P) {
 	return 998.0;
@@ -121,7 +120,7 @@ real MU_V(real T, real P) {
 	return a0 + a1 * T;
 }
 real dMU_VdT(real T, real P) {
-	real a1 = 40.35e-6;
+	real a1 = 40.35e-9;
 	return a1;
 }
 real NU_L(real T, real P) {
@@ -164,6 +163,7 @@ real K_V(real T, real P) {
 }
 real dK_VdT(real T, real P) {
 	real a1 = 118.42e-6;
+	return a1;
 }
 real K_S(real T) {
 	return 21.7;
@@ -205,8 +205,8 @@ real H_to_T(real h, real P) {
 	h_m_s0 = H_V_SAT(P);
 	T = T_SAT(P);
 	// if cp_l is not constant, need modification
-	if (h < h_m_s1) { return h / CP_L(T, P); }
-	else if (h > h_m_s0) { return T + (h - h_m_s0) / CP_V(T, P); }
+	if (h <= h_m_s1) { return h / CP_L(T, P); }
+	else if (h >= h_m_s0) { return T + (h - h_m_s0) / CP_V(T, P); }
 	else { return T; }
 }
 real H_to_S(real h, real P) {
@@ -510,7 +510,7 @@ real q_boil(real H, real P, real alpha, real T_s) {
 	real T, S;
 	T = H_to_T(H, P);
 	S = H_to_S(H, P);
-	return S * alpha * MU(H, P) * H_FG(P) * sqrt(sqrt(G_X * G_X + G_Y * G_Y) * (RHO_L(T, P) - RHO_V(T, P)) / MY_SIGMA) * pow(CP_L(T, P) * (T_s - T_SAT(P)) / (MY_C_SF * H_FG(P) * Pr_L(T, P)), 3);
+	return S * alpha * MU(H, P) * H_FG(P) * sqrt(G * (RHO_L(T, P) - RHO_V(T, P)) / MY_SIGMA) * pow(CP_L(T, P) * (T_s - T_SAT(P)) / (MY_C_SF * H_FG(P) * Pr_L(T, P)), 3);
 }
 real dq_boildS(real H, real P, real alpha, real T_s) {
 	return q_boil(H, S, alpha, T_s) / S + q_boil(H, S, alpha, T_s) / MU(H, P) * dMUdS(H, P);
@@ -553,7 +553,7 @@ real dqsfdH(real H, real P, real v, real alpha, real T_s) {
 		return dq_vdT(T, P, v, alpha, T_s) / (dCP_VdT(T, P) * (T - T_sat) + CP_V(T, P));
 	}
 	else {
-		return (dq_boildS(H, P, alpha, T_s) - h_sv(T, P, v) * alpha * (T_s - T_sat)) / (dLAMBDA_LdS(H, P) * H_FG(P));
+		return (dq_boildS(H, P, alpha, T_s) - h_sv(T, P, v) * alpha * (T_s - T_sat)) / (-dLAMBDA_LdS(H, P) * H_FG(P));
 	}
 }
 real dqsfdT_s(real H, real P, real v, real alpha, real T_s) {
