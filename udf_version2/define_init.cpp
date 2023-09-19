@@ -19,7 +19,7 @@ DEFINE_INIT(init_function,d){
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
 	A = M_PI * pow(models.D, 2) / 4;
-	h_in = models.reservoir_enthalpy
+	h_in = models.reservoir_enthalpy;
     h_out = h_in + q_in/(mass_in/A);
 
 	thread_loop_c(t, d) {
