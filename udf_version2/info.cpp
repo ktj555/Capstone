@@ -301,7 +301,7 @@ real H_fg_face(face_t f, Thread* t){
 	return (a0 + a1 * T + a2 * pow(T, 2) + a3 * sqrt(650 - T))*1000;
 }
 real H_sat_l_face(face_t f, Thread* t){
-    return Specific_Heat_l_face(f,t) * T_sat_face(f,t);
+    return Specific_Heat_l_face(f,t) * (T_sat_face(f,t)-models.T_ref);
 }
 real H_sat_v_face(face_t f, Thread* t){
     return H_sat_l_face(f,t) + H_fg_face(f,t);
