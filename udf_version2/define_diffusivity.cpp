@@ -38,7 +38,7 @@ DEFINE_DIFFUSIVITY(diffusivity_for_solid, c, t, i){
     real e, k_s;
 
     e = Porosity(c,t);
-    k_s = Condcutivity_s(c,t);
+    k_s = Conductivity_s(c,t);
 
     return (1-e)*k_s;
 }

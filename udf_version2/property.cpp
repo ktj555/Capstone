@@ -73,15 +73,15 @@ real K_rv(cell_t c, Thread* t){
     return pow(1-S_(c,t),3);
 }
 real L(cell_t c, Thread* t){
-    return K_rl(c,t) * Kineamatic_Viscosity_m(c,t) / Kinematic_Viscosity_l(c,t)
+    return K_rl(c,t) * Kinematic_Viscosity_m(c,t) / Kinematic_Viscosity_l(c,t)
 }
 real Rho_m(cell_t c, Thread* t){
     return S_(c,t) * Rho_l(c,t) + (1 - S_(c,t)) * Rho_v(c,t);
 }
 real Viscosity_m(cell_t c, Thread* t){
-    return Rho_m(c,t) * Kineamatic_Viscosity_m(c,t);
+    return Rho_m(c,t) * Kinematic_Viscosity_m(c,t);
 }
-real Kineamatic_Viscosity_m(cell_t c, Thread* t){
+real Kinematic_Viscosity_m(cell_t c, Thread* t){
     return 1 / (K_rl(c,t) / Kinematic_Viscosity_l(c,t) + K_rv(c,t) / Kinematic_Viscosity_v(c,t));
 }
 real Conductivity_m(cell_t c,Thread* t){
@@ -130,16 +130,16 @@ real dkrv_dS(cell_t c,Thread* t){
     return -3 * pow(1-S_(c,t),2);
 }
 real dl_dS(cell_t c,Thread* t){
-    return (dkrl_dS(c,t) * Kineamatic_Viscosity_m(c,t) + K_rl(c,t) * dnu_dS(c,t)) / Kinematic_Viscosity_l(c,t);
+    return (dkrl_dS(c,t) * Kinematic_Viscosity_m(c,t) + K_rl(c,t) * dnu_dS(c,t)) / Kinematic_Viscosity_l(c,t);
 }
 real drho_dS(cell_t c,Thread* t){
     return Rho_l(c,t) - Rho_v(c,t);
 }
 real dmu_dS(cell_t c,Thread* t){
-    return drho_dS(c,t) * Kineamatic_Viscosity_m(c,t) + Rho_m(c,t) * dnu_dS(c,t);
+    return drho_dS(c,t) * Kinematic_Viscosity_m(c,t) + Rho_m(c,t) * dnu_dS(c,t);
 }
 real dnu_dS(cell_t c,Thread* t){
-    return -pow(Kineamatic_Viscosity_m(c,t),2) * (dkrl_dS(c,t) / Kinematic_Viscosity_l(c,t) + dkrv_dS(c,t) / Kinematic_Viscosity_v(c,t));
+    return -pow(Kinematic_Viscosity_m(c,t),2) * (dkrl_dS(c,t) / Kinematic_Viscosity_l(c,t) + dkrv_dS(c,t) / Kinematic_Viscosity_v(c,t));
 }
 
 // past
@@ -193,15 +193,15 @@ real K_rv_past(cell_t c, Thread* t){
     return pow(1-S_past(c,t),3);
 }
 real L_past(cell_t c, Thread* t){
-    return K_rl_past(c,t) * Kineamatic_Viscosity_m_past(c,t) / Kinematic_Viscosity_l_past(c,t)
+    return K_rl_past(c,t) * Kinematic_Viscosity_m_past(c,t) / Kinematic_Viscosity_l_past(c,t)
 }
 real Rho_m_past(cell_t c,Thread* t){
     return S_past(c,t) * Rho_l_past(c,t) + (1 - S_past(c,t)) * Rho_v_past(c,t);
 }
 real Viscosity_m_past(cell_t c, Thread* t){
-    return Rho_m_past(c,t) * Kineamatic_Viscosity_m_past(c,t);
+    return Rho_m_past(c,t) * Kinematic_Viscosity_m_past(c,t);
 }
-real Kineamatic_Viscosity_m_past(cell_t c, Thread* t){
+real Kinematic_Viscosity_m_past(cell_t c, Thread* t){
     return 1 / (K_rl_past(c,t) / Kinematic_Viscosity_l_past(c,t) + K_rv_past(c,t) / Kinematic_Viscosity_v_past(c,t));
 }
 
@@ -269,9 +269,9 @@ real Kinematic_Viscosity_l(face_t c, Thread* t){
 real Kinematic_Viscosity_v(face_t c, Thread* t){
     return Viscosity_v(f,t) / Rho_v(f,t);
 }
-real K_rl(cell_t c, Thread* t){
+real K_rl(face_t f, Thread* t){
     return pow(S_(f,t),3);
 }
 real L(face_t c, Thread* t){
-    return K_rl(f,t) * Kineamatic_Viscosity_m(f,t) / Kinematic_Viscosity_l(f,t)
+    return K_rl(f,t) * Kinematic_Viscosity_m(f,t) / Kinematic_Viscosity_l(f,t)
 }

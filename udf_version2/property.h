@@ -25,11 +25,11 @@ real Kinematic_Viscosity_v(cell_t c, Thread* t);
 
 // mixture
 real K_rl(cell_t c, Thread* t);
-real k_rv(cell_t c, Thread* t);
+real K_rv(cell_t c, Thread* t);
 real L(cell_t c, Thread* t);
 real Rho_m(cell_t c, Thread* t);
 real Viscosity_m(cell_t c, Thread* t);
-real Kineamatic_Viscosity_m(cell_t c,Thread* t);
+real Kinematic_Viscosity_m(cell_t c,Thread* t);
 real Conductivity_m(cell_t c,Thread* t);
 
 
@@ -66,11 +66,11 @@ real Viscosity_v_past(cell_t c,Thread* t);
 real Kinematic_Viscosity_l_past(cell_t c,Thread* t);
 real Kinematic_Viscosity_v_past(cell_t c,Thread* t);
 real K_rl_past(cell_t c, Thread* t);
-real k_rv_past(cell_t c, Thread* t);
+real K_rv_past(cell_t c, Thread* t);
 real L_past(cell_t c, Thread* t);
 real Rho_m_past(cell_t c,Thread* t);
 real Viscosity_m_past(cell_t c, Thread* t);
-real Kineamatic_Viscosity_m_past(cell_t c,Thread* t);
+real Kinematic_Viscosity_m_past(cell_t c,Thread* t);
 
 // face
 real Specific_Heat_l(face_t f,Thread* t);
