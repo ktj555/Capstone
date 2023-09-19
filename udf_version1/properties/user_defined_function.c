@@ -466,7 +466,7 @@ real dPr_VdT(real T, real P) {
 	return (dMU_VdT(T, P) * CP_V(T, P) + MU_V(T, P) * dCP_VdT(T, P) - Pr_V(T, P) * dK_VdT(T, P)) / K_V(T, P);
 }
 real Nu_L(real T, real P, real v) {
-	return 2 + 1.1 * pow(Pr_L(T, P), 0.33) * pow(Re_L(T, P, v), 0.6);
+	return 2 + 1.1 * pow(Pr_L(T, P), 0.33) * pLow(Re_L(T, P, v), 0.6);
 }
 real dNu_LdT(real T, real P, real v) {
 	return 1.1 * (0.33 * pow(Pr_L(T, P), -0.67) * dPr_LdT(T, P) * pow(Re_L(T, P, v), 0.6) + 0.6 * pow(Pr_L(T, P), 0.33) * pow(Re_L(T, P, v), -0.4) * dRe_LdT(T, P, v));
