@@ -1,16 +1,16 @@
 #include "model.h"
 #include "udf.h"
 
-constant model;
+constant figure;
 
-model.sigma = 0.072;
-model.T_ref = 303.15;
-model.c_sf = 0.006;
-model.D = 0.06;
-model.thickness = 0.008;
-model.init_dt = 0.1;
-model.reservoir_temp = 303.15;
-model.reservoir_enthalpy = 303.15 * 4182;
+figure.sigma = 0.072;
+figure.T_ref = 303.15;
+figure.c_sf = 0.006;
+figure.D = 0.06;
+figure.thickness = 0.008;
+figure.init_dt = 0.1;
+figure.reservoir_temp = 303.15;
+figure.reservoir_enthalpy = 303.15 * 4182;
 
 real Porosity(cell_t c, Thread* t){
     real cen[ND_ND];

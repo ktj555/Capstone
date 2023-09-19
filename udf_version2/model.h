@@ -35,6 +35,6 @@ real Particle_Diameter(cell_t c, Thread* t);
 real Porosity(face_t f,Thread* t);
 real Particle_Diameter_face(face_t f,Thread* t);
 
-extern constant model;
+extern constant figure;
 
 #endif

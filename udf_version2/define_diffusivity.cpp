@@ -29,7 +29,7 @@ DEFINE_DIFFUSIVITY(diffusivity_for_fluid, c, t, i){
         lambda = L(c,t);
         dlambda = dl_dS(c,t);
         dj = -J_function_derivative(c,t);
-        D = K / nu * lambda * (1-lambda) * sqrt(e / K) * model.sigma * dj;
+        D = K / nu * lambda * (1-lambda) * sqrt(e / K) * figure.sigma * dj;
         return D / dlambda ; 
     }
 }

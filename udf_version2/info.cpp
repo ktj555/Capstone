@@ -31,9 +31,9 @@ real T_f(cell_t c, Thread* t){
     }
     switch(state(c,t)){
     case liquid:
-        return model.T_ref + h / Specific_Heat_l(c,t);
+        return figure.T_ref + h / Specific_Heat_l(c,t);
     case vapor:
-        return T_sat(c,t) + (h - H_v_sat(c,t)) / Specific_Heat_v(c,t);
+        return T_sat(c,t) + (h - H_sat_v(c,t)) / Specific_Heat_v(c,t);
     case mixture:
         return T_sat(c,t);
     }
@@ -69,14 +69,14 @@ real dT_dH(cell_t c, Thread* t){
     }
 }
 real dS_dH(cell_t c,Thread* t){
-    return -1/(H_fg(c,t) * dl_dS(c,t))
+    return -1/(H_fg(c,t) * dl_dS(c,t));
 }
 
 real T_sat(cell_t c, Thread* t){
     real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (C_P(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (C_P(c,t) + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
         p = RP_Get_Real("operating-pressure") / 1e6;
@@ -100,7 +100,7 @@ real H_fg(cell_t c, Thread* t){
 
 
 real H_sat_l(cell_t c, Thread* t){
-    return Specific_Heat_l(c,t) * (T_sat(c,t) - model.T_ref);
+    return Specific_Heat_l(c,t) * (T_sat(c,t) - figure.T_ref);
 }
 real H_sat_v(cell_t c, Thread* t){
     return H_sat_l(c,t) + H_fg(c,t);
@@ -120,7 +120,7 @@ real beta_current(cell_t c,Thread* t){
     case vapor:
         return 1;
     case mixture:
-        return (Rho_v(c,t)/ Rho_m(c,t) * (1-S_(c,t)) * H_fg(c,t) + Specific_Heat_l(c,t)*T_sat(c,t)) / ((1-L(c,t))*H_fg(c,t)+Specific_Heat_l(c,t)*T_sat(c,t))
+        return (Rho_v(c,t)/ Rho_m(c,t) * (1-S_(c,t)) * H_fg(c,t) + Specific_Heat_l(c,t)*T_sat(c,t)) / ((1-L(c,t))*H_fg(c,t)+Specific_Heat_l(c,t)*T_sat(c,t));
     }
 }
 
@@ -137,8 +137,8 @@ int state_past(cell_t c,Thread* t){
         h = 0;
     }
 
-    if(h<=h_l_sat) return liquid;
-    else if(h>=h_v_sat) return vapor;
+    if(h<=h_l_sat_past) return liquid;
+    else if(h>=h_v_sat_past) return vapor;
     else return mixture;
 }
 real T_f_past(cell_t c, Thread* t){
@@ -151,9 +151,9 @@ real T_f_past(cell_t c, Thread* t){
     }
     switch(state_past(c,t)){
     case liquid:
-        return model.T_ref + h / Specific_Heat_l_past(c,t);
+        return figure.T_ref + h / Specific_Heat_l_past(c,t);
     case vapor:
-        return T_sat_past(c,t) + (h - H_v_sat_past(c,t)) / Specific_Heat_v_past(c,t);
+        return T_sat_past(c,t) + (h - H_sat_v_past(c,t)) / Specific_Heat_v_past(c,t);
     case mixture:
         return T_sat(c,t);
     }
@@ -182,7 +182,7 @@ real T_sat_past(cell_t c, Thread* t){
     real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (C_P_M1(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (C_P_M1(c,t) + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
         p = RP_Get_Real("operating-pressure") / 1e6;
@@ -216,7 +216,7 @@ real beta_past(cell_t c, Thread* t){
     case vapor:
         return 1;
     case mixture:
-        return (Rho_v_past(c,t) / Rho_m_past(c,t) * (1-S_past(c,t)) * H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t)) / ((1-L_past(c,t))*H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t))
+        return (Rho_v_past(c,t) / Rho_m_past(c,t) * (1-S_past(c,t)) * H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t)) / ((1-L_past(c,t))*H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t));
     }
 }
 
@@ -246,9 +246,9 @@ real T_f_face(face_t f, Thread* t){
     }
     switch(state(f,t)){
     case liquid:
-        return model.T_ref + h / Specific_Heat_l_face(f,t);
+        return figure.T_ref + h / Specific_Heat_l_face(f,t);
     case vapor:
-        return T_sat_face(f,t) + (h - H_v_sat_face(f,t)) / Specific_Heat_v_face(f,t);
+        return T_sat_face(f,t) + (h - H_sat_v_face(f,t)) / Specific_Heat_v_face(f,t);
     case mixture:
         return T_sat_face(f,t);
     }
@@ -277,7 +277,7 @@ real T_sat_face(face_t f, Thread* t){
     real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (F_P(f,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (F_P(f,t) + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
         p = RP_Get_Real("operating-pressure") / 1e6;
@@ -301,7 +301,7 @@ real H_fg_face(face_t f, Thread* t){
 real H_sat_l_face(face_t f, Thread* t){
     return Specific_Heat_l_face(f,t) * T_sat_face(f,t);
 }
-real H_sat_v_face(cell_t c, Thread* t){
+real H_sat_v_face(face_t f, Thread* t){
     return H_sat_l_face(f,t) + H_fg_face(f,t);
 }
 real beta_current_face(face_t f,Thread* t){
@@ -311,14 +311,14 @@ real beta_current_face(face_t f,Thread* t){
     case vapor:
         return 1;
     case mixture:
-        return (Rho_v_face(f,t)/ Rho_m_face(f,t) * (1-S_face(f,t)) * H_fg_face(f,t) + Specific_Heat_l_face(f,t)*T_sat_face(f,t)) / ((1-L_face(f,t))*H_fg_face(f,t)+Specific_Heat_l_face(f,t)*T_sat_face(f,t))
+        return (Rho_v_face(f,t)/ Rho_m_face(f,t) * (1-S_face(f,t)) * H_fg_face(f,t) + Specific_Heat_l_face(f,t)*T_sat_face(f,t)) / ((1-L_face(f,t))*H_fg_face(f,t)+Specific_Heat_l_face(f,t)*T_sat_face(f,t));
     }
 }
 real dTsat_dP_face(face_t f,Thread* t){
     real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (F_P(f,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (F_P(f,t) + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
         p = RP_Get_Real("operating-pressure") / 1e6;
