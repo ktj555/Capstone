@@ -4,7 +4,7 @@
 #include "heattransfer.h"
 #include "info.h"
 
-extern struct constant models;
+constant models;
 
 DEFINE_PROFILE(inlet_enthalpy, t, i)
 {
