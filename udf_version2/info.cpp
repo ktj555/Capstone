@@ -3,7 +3,7 @@
 #include "model.h"
 #include "udf.h"
 
-constant models;
+extern constant models;
 
 int state(cell_t c, Thread* t){
     real h_l_sat = H_sat_l(c,t);

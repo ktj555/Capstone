@@ -3,7 +3,7 @@
 #include "model.h"
 #include "info.h"
 
-constant models;
+extern constant models;
 
 real alpha_sf(cell_t c, Thread* t){
     return 6 * (1-Porosity(c,t)) / Particle_Diameter(c,t);

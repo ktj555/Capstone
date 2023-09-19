@@ -1,7 +1,7 @@
 #include "model.h"
 #include "udf.h"
 
-extern struct constant models;
+constant models;
 
 real Porosity(cell_t c, Thread* t){
     real cen[ND_ND];

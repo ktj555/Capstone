@@ -4,7 +4,7 @@
 #include "heattransfer.h"
 #include "info.h"
 
-constant models;
+extern constant models;
 
 DEFINE_DIFFUSIVITY(diffusivity_for_fluid, c, t, i){
     real e;
