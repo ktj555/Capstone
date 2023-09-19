@@ -4,6 +4,8 @@
 #include "heattransfer.h"
 #include "info.h"
 
+constant models;
+
 DEFINE_INIT(init_function,d){
 #if !RP_HOST
 	cell_t c;
@@ -16,8 +18,8 @@ DEFINE_INIT(init_function,d){
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
-	A = M_PI * pow(constant::D, 2) / 4;
-    h_in = Specific_Heat_l(c,t) * constant::reservoir_temp;
+	A = M_PI * pow(models.D, 2) / 4;
+    h_in = Specific_Heat_l(c,t) * models.reservoir_temp;
     h_out = h_in + q_in/(mass_in/A);
 
 	thread_loop_c(t, d) {
@@ -25,8 +27,8 @@ DEFINE_INIT(init_function,d){
 		{
 			C_CENTROID(cen,c,t);
 			x = cen[0];
-			C_UDSI(c, t, uds::enthalpy) = h_in + (h_out - h_in) / constant::thickness * (x + constant::thickness * 0.5);
-			C_UDSI(c, t, uds::temp_s) = T_f(c,t) + constant::init_dt;
+			C_UDSI(c, t, enthalpy) = h_in + (h_out - h_in) / models.thickness * (x + models.thickness * 0.5);
+			C_UDSI(c, t, temp_s) = T_f(c,t) + models.init_dt;
 		}
 		end_c_loop_all(c, t)
 	}

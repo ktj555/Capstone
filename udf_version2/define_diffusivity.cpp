@@ -4,6 +4,8 @@
 #include "heattransfer.h"
 #include "info.h"
 
+constant models;
+
 DEFINE_DIFFUSIVITY(diffusivity_for_fluid, c, t, i){
     real e;
 
@@ -29,7 +31,7 @@ DEFINE_DIFFUSIVITY(diffusivity_for_fluid, c, t, i){
         lambda = L(c,t);
         dlambda = dl_dS(c,t);
         dj = -J_function_derivative(c,t);
-        D = K / nu * lambda * (1-lambda) * sqrt(e / K) * constant::sigma * dj;
+        D = K / nu * lambda * (1-lambda) * sqrt(e / K) * models.sigma * dj;
         return D / dlambda ; 
     }
 }

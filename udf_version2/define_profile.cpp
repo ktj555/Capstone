@@ -4,6 +4,8 @@
 #include "heattransfer.h"
 #include "info.h"
 
+constant models;
+
 DEFINE_PROFILE(inlet_enthalpy, t, i)
 {
 	face_t f;
@@ -63,7 +65,7 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	real mass_in, m_flux;
 
 	mass_in = RP_Get_Real("myudf/mass");
-	m_flux = mass_in / (pow(constant::D,2) / 4);
+	m_flux = mass_in / (pow(models.D,2) / 4);
 
 	begin_f_loop(f, t)
 	{
