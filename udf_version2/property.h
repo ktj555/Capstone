@@ -88,7 +88,9 @@ real Viscosity_l_face(face_t f,Thread* t);
 real Viscosity_v_face(face_t f,Thread* t);
 real Kinematic_Viscosity_l_face(face_t f,Thread* t);
 real Kinematic_Viscosity_v_face(face_t f,Thread* t);
+real Kinematic_Viscosity_m_face(face_t f,Thread* t);
 real K_rl_face(face_t f,Thread* t);
+real K_rv_face(face_t f, Thread* t);
 real L_face(face_t f,Thread* t);
 
 #endif
