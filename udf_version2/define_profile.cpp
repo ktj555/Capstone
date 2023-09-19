@@ -65,7 +65,7 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	real mass_in, m_flux;
 
 	mass_in = RP_Get_Real("myudf/mass");
-	m_flux = mass_in / (pow(models.D,2) / 4);
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
 
 	begin_f_loop(f, t)
 	{
@@ -109,7 +109,7 @@ DEFINE_PROFILE(porosity, t, i) {
 DEFINE_PROFILE(permeability_resistence, t, i) {
 	cell_t c;
 	begin_c_loop(c, t) {
-		C_PROFILE(c,t,i) = Permeability(c,t);
+		C_PROFILE(c,t,i) = 1/ Permeability(c,t);
 	}
 	end_c_loop(c,t)
 }

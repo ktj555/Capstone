@@ -168,7 +168,7 @@ real inlet_enthalpy_l(face_t f,Thread* t){
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
-	m_flux = mass_in / (pow(models.D,2) / 4);
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
 
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
         T_s = F_UDSI(f,t,temp_s);
@@ -194,7 +194,7 @@ real inlet_enthalpy_v(face_t f,Thread* t){
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
-	m_flux = mass_in / (pow(models.D,2) / 4);
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
 
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
         T_s = F_UDSI(f,t,temp_s);
@@ -220,7 +220,7 @@ real inlet_enthalpy_m(face_t f,Thread* t){
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
-	m_flux = mass_in / (pow(models.D,2) / 4);
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
 
     h_inlet = S_face(f,t) * h_l_face(f,t) + (1-S_face(f,t)) * h_v_face(f,t);
 

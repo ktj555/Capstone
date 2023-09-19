@@ -11,7 +11,7 @@ struct constant{
     real thickness = 0.008;
     real init_dt = 0.1;
     real reservoir_temp = 303.15;
-    real reservoir_enthalpy = 303.15 * 4182;
+    real reservoir_enthalpy = 0;
 };
 
 enum uds{
