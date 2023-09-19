@@ -51,12 +51,12 @@ real Rho_v(cell_t c,Thread* t){
 real Viscosity_l(cell_t c, Thread* t){
     real T;
     T = T_f(c,t);
-    return 24.141e-3 * pow(10,247.8 / (T - 140));
+    return 24.141e-6 * pow(10,247.8 / (T - 140));
 }
 real Viscosity_v(cell_t c, Thread* t){
     real T;
     T = T_f(c,t);
-    return -2.77567e-3 + 40.35e-6 * T;
+    return -2.77567e-6 + 40.35e-9 * T;
 }
 real Kinematic_Viscosity_l(cell_t c, Thread* t){
     return Viscosity_l(c,t) / Rho_l(c,t);
@@ -175,12 +175,12 @@ real Rho_v_past(cell_t c,Thread* t){
 real Viscosity_l_past(cell_t c, Thread* t){
     real T;
     T = T_f_past(c,t);
-    return 24.141e-3 * pow(10,247.8 / (T - 140));
+    return 24.141e-6 * pow(10,247.8 / (T - 140));
 }
 real Viscosity_v_past(cell_t c, Thread* t){
     real T;
     T = T_f_past(c,t);
-    return -2.77567e-3 + 40.35e-6 * T;
+    return -2.77567e-6 + 40.35e-9 * T;
 }
 real Kinematic_Viscosity_l_past(cell_t c, Thread* t){
     return Viscosity_l_past(c,t) / Rho_l_past(c,t);
@@ -258,12 +258,12 @@ real Rho_m_face(face_t f, Thread* t){
 real Viscosity_l_face(face_t f, Thread* t){
     real T;
     T = T_f_face(f,t);
-    return 24.141e-3 * pow(10,247.8 / (T - 140));
+    return 24.141e-6 * pow(10,247.8 / (T - 140));
 }
 real Viscosity_v_face(face_t f, Thread* t){
     real T;
     T = T_f_face(f,t);
-    return -2.77567e-3 + 40.35e-6 * T;
+    return -2.77567e-6 + 40.35e-9 * T;
 }
 real Kinematic_Viscosity_l_face(face_t f, Thread* t){
     return Viscosity_l_face(f,t) / Rho_l_face(f,t);
