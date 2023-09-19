@@ -53,8 +53,8 @@ real h_v(cell_t c, Thread* t){
 
 real q_l(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);
@@ -63,8 +63,8 @@ real q_l(cell_t c,Thread* t){
 }
 real q_v(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);
@@ -73,8 +73,8 @@ real q_v(cell_t c,Thread* t){
 }
 real q_boil(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);
@@ -128,8 +128,8 @@ real dhv_dT(cell_t c,Thread* t){
 }
 real dql_dT(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);
@@ -138,8 +138,8 @@ real dql_dT(cell_t c,Thread* t){
 }
 real dqv_dT(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);
@@ -149,8 +149,8 @@ real dqv_dT(cell_t c,Thread* t){
 
 real dqboil_dS(cell_t c,Thread* t){
     real T_s;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        T_s = C_UDSI(c,t,uds::temp_s);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
     }
     else{
         T_s = T_f(c,t);

@@ -5,6 +5,7 @@
 #include "info.h"
 
 DEFINE_EXECUTE_FROM_GUI(mass_and_heat,libname,mode){
+    real MASS_IN, Q_IN;
     MASS_IN = RP_Get_Real("myudf/mass");
     Q_IN = RP_Get_Real("myudf/heat");
 #if RP_HOST

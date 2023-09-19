@@ -10,13 +10,13 @@ DEFINE_PROFILE(inlet_enthalpy, t, i)
 
 	begin_f_loop(f,t){
 		switch(state(f,t)){
-		case state_of_cell::liquid:
+		case liquid:
 			F_PROFILE(f,t,i) = inlet_enthalpy_l(f,t);
 			break;
-		case state_of_cell::vapor:
+		case vapor:
 			F_PROFILE(f,t,i) = inlet_enthalpy_v(f,t);
 			break;
-		case state_of_cell::mixture:
+		case mixture:
 			F_PROFILE(f,t,i) = inlet_enthalpy_m(f,t);
 			break;
 		}
@@ -41,13 +41,13 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 		T = T_f(f,t);
 
 		switch(state(f,t)){
-		case state_of_cell::liquid:
+		case liquid:
 			h_c = h_l(f,t);
 			break;
-		case state_of_cell::vapor:
+		case vapor:
 			h_c = h_v(f,t);
 			break;
-		case state_of_cell::mixture:
+		case mixture:
 			h_c = S_(f,t) * h_l(f,t) + (1-S_(f,t)) * h_v(f,t);
 			break;
 		}
@@ -60,6 +60,7 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 DEFINE_PROFILE(inlet_velocity, t, i)
 {
 	face_t f;
+	real mass_in, m_flux;
 
 	mass_in = RP_Get_Real("myudf/mass");
 	m_flux = mass_in / (pow(model.D,2) / 4);
@@ -67,13 +68,13 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	begin_f_loop(f, t)
 	{
 		switch(state(f,t)){
-		case state_of_cell::liquid:
+		case liquid:
 			F_PROFILE(f,t,i) = m_fluc / Rho_l(f,t);
 			break;
-		case state_of_cell::vapor:
+		case vapor:
 			F_PROFILE(f,t,i) = m_fluc / Rho_v(f,t);
 			break;
-		case state_of_cell::mixture:
+		case mixture:
 			F_PROFILE(f,t,i) = m_fluc / Rho_m(f,t);
 			break;
 		}

@@ -7,51 +7,51 @@ int state(cell_t c, Thread* t){
     real h_l_sat = H_sat_l(c,t);
     real h_v_sat = H_sat_v(c,t);
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI(c,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI(c,t,enthalpy);
     }
     else{
         h = 0;
     }
     
-    if(h<=h_l_sat) return state_of_cell::liquid;
-    else if(h>=h_v_sat) return state_of_cell::vapor;
-    else return state_of_cell::mixture;
+    if(h<=h_l_sat) return liquid;
+    else if(h>=h_v_sat) return vapor;
+    else return mixture;
 }
 
 
 
 real T_f(cell_t c, Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI(c,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI(c,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return model.T_ref + h / Specific_Heat_l(c,t);
-    case state_of_cell::vapor:
+    case vapor:
         return T_sat(c,t) + (h - H_v_sat(c,t)) / Specific_Heat_v(c,t);
-    case state_of_cell::mixture:
+    case mixture:
         return T_sat(c,t);
     }
 }
 real S_(cell_t c,Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI(c,t,uds::uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI(c,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 0;
-    case state_of_cell::mixture:
+    case mixture:
         real nu_r, h_r;
         nu_r = Kinematic_Viscosity_v(c,t) / Kinematic_Viscosity_l(c,t);
         h_r = H_fg(c,t) / (H_sat_v(c,t) - h);
@@ -60,11 +60,11 @@ real S_(cell_t c,Thread* t){
 }
 real dT_dH(cell_t c, Thread* t){
     switch(state(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1/(Specific_Heat_l(c,t) + dcpl_dT(c,t) * T_f(c,t));
-    case state_of_cell::vapor:
+    case vapor:
         return 1/(Specific_Heat_v(c,t) + dcpv_dT(c,t) * T_f(c,t));
-    case state_of_cell::mixture:
+    case mixture:
         return dS_dH(c,t);
     }
 }
@@ -115,11 +115,11 @@ real J_function_derivative(cell_t c,Thread* t){
 }
 real beta_current(cell_t c,Thread* t){
     switch(state(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 1;
-    case state_of_cell::mixture:
+    case mixture:
         return (Rho_v(c,t)/ Rho_m(c,t) * (1-S_(c,t)) * H_fg(c,t) + Specific_Heat_l(c,t)*T_sat(c,t)) / ((1-L(c,t))*H_fg(c,t)+Specific_Heat_l(c,t)*T_sat(c,t))
     }
 }
@@ -130,48 +130,48 @@ int state_past(cell_t c,Thread* t){
     real h_l_sat_past = H_sat_l_past(c,t);
     real h_v_sat_past = H_sat_v_past(c,t);
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI_M1(c,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
         h = 0;
     }
 
-    if(h<=h_l_sat) return state_of_cell::liquid;
-    else if(h>=h_v_sat) return state_of_cell::vapor;
-    else return state_of_cell::mixture;
+    if(h<=h_l_sat) return liquid;
+    else if(h>=h_v_sat) return vapor;
+    else return mixture;
 }
 real T_f_past(cell_t c, Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI_M1(c,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state_past(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return model.T_ref + h / Specific_Heat_l_past(c,t);
-    case state_of_cell::vapor:
+    case vapor:
         return T_sat_past(c,t) + (h - H_v_sat_past(c,t)) / Specific_Heat_v_past(c,t);
-    case state_of_cell::mixture:
+    case mixture:
         return T_sat(c,t);
     }
 }
 real S_past(cell_t c, Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI_M1(c,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state_past(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 0;
-    case state_of_cell::mixture:
+    case mixture:
         real nu_r, h_r;
         nu_r = Kinematic_Viscosity_v_past(c,t) / Kinematic_Viscosity_l_past(c,t);
         h_r = H_fg_past(c,t) / (H_sat_v_past(c,t) - h);
@@ -211,11 +211,11 @@ real H_sat_v_past(cell_t c, Thread* t){
 }
 real beta_past(cell_t c, Thread* t){
     switch(state_past(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 1;
-    case state_of_cell::mixture:
+    case mixture:
         return (Rho_v_past(c,t) / Rho_m_past(c,t) * (1-S_past(c,t)) * H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t)) / ((1-L_past(c,t))*H_fg_past(c,t) + Specific_Heat_l_past(c,t) * T_sat_past(c,t))
     }
 }
@@ -225,48 +225,48 @@ int state(face_t f, Thread* t){
     real h_l_sat = H_sat_l(f,t);
     real h_v_sat = H_sat_v(f,t);
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = F_UDSI(f,t,uds::uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = F_UDSI(f,t,enthalpy);
     }
     else{
         h = 0;
     }
     
-    if(h<=h_l_sat) return state_of_cell::liquid;
-    else if(h>=h_v_sat) return state_of_cell::vapor;
-    else return state_of_cell::mixture;
+    if(h<=h_l_sat) return liquid;
+    else if(h>=h_v_sat) return vapor;
+    else return mixture;
 }
 real T_f(face_t f, Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = F_UDSI(f,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = F_UDSI(f,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state(f,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return model.T_ref + h / Specific_Heat_l(f,t);
-    case state_of_cell::vapor:
+    case vapor:
         return T_sat(f,t) + (h - H_v_sat(f,t)) / Specific_Heat_v(f,t);
-    case state_of_cell::mixture:
+    case mixture:
         return T_sat(f,t);
     }
 }
 real S_(face_t f,Thread* t){
     real h;
-    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = F_UDSI(f,t,uds::enthalpy);
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
+        h = F_UDSI(f,t,enthalpy);
     }
     else{
         h = 0;
     }
     switch(state(f,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 0;
-    case state_of_cell::mixture:
+    case mixture:
         real nu_r, h_r;
         nu_r = Kinematic_Viscosity_v(f,t) / Kinematic_Viscosity_l(f,t);
         h_r = H_fg(f,t) / (H_sat_v(f,t) - h);
@@ -306,11 +306,11 @@ real H_sat_v(cell_t c, Thread* t){
 }
 real beta_current(face_t f,Thread* t){
     switch(state(f,t)){
-    case state_of_cell::liquid:
+    case liquid:
         return 1;
-    case state_of_cell::vapor:
+    case vapor:
         return 1;
-    case state_of_cell::mixture:
+    case mixture:
         return (Rho_v(f,t)/ Rho_m(f,t) * (1-S_(f,t)) * H_fg(f,t) + Specific_Heat_l(f,t)*T_sat(f,t)) / ((1-L(f,t))*H_fg(f,t)+Specific_Heat_l(f,t)*T_sat(f,t))
     }
 }
