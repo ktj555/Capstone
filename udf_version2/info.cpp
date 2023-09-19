@@ -8,7 +8,7 @@ int state(cell_t c, Thread* t){
     real h_v_sat = H_sat_v(c,t);
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
-        h = C_UDSI(c,t,uds::uds::enthalpy);
+        h = C_UDSI(c,t,uds::enthalpy);
     }
     else{
         h = 0;
@@ -38,7 +38,7 @@ real T_f(cell_t c, Thread* t){
         return T_sat(c,t);
     }
 }
-real S(cell_t c,Thread* t){
+real S_(cell_t c,Thread* t){
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
         h = C_UDSI(c,t,uds::uds::enthalpy);
@@ -108,10 +108,10 @@ real H_sat_v(cell_t c, Thread* t){
 
 
 real J_function(cell_t c, Thread* t){
-    return 1.417*(1-S(c,t)) - 2.120*pow(1-S(c,t),2) + 1.263*pow(1-S(c,t),3);
+    return 1.417*(1-S_(c,t)) - 2.120*pow(1-S_(c,t),2) + 1.263*pow(1-S_(c,t),3);
 }
 real J_function_derivative(cell_t c,Thread* t){
-    return - (1.417 - 2*2.120 * (1-S(c,t)) + 3 * 1.263 * pow(1-S(c,t),2));
+    return - (1.417 - 2*2.120 * (1-S_(c,t)) + 3 * 1.263 * pow(1-S_(c,t),2));
 }
 real beta_current(cell_t c,Thread* t){
     switch(state(c,t)){
@@ -120,7 +120,7 @@ real beta_current(cell_t c,Thread* t){
     case state_of_cell::vapor:
         return 1;
     case state_of_cell::mixture:
-        return (Rho_v(c,t)/ Rho_m(c,t) * (1-S(c,t)) * H_fg(c,t) + Specific_Heat_l(c,t)*T_sat(c,t)) / ((1-L(c,t))*H_fg(c,t)+Specific_Heat_l(c,t)*T_sat(c,t))
+        return (Rho_v(c,t)/ Rho_m(c,t) * (1-S_(c,t)) * H_fg(c,t) + Specific_Heat_l(c,t)*T_sat(c,t)) / ((1-L(c,t))*H_fg(c,t)+Specific_Heat_l(c,t)*T_sat(c,t))
     }
 }
 
@@ -253,7 +253,7 @@ real T_f(face_t f, Thread* t){
         return T_sat(f,t);
     }
 }
-real S(face_t f,Thread* t){
+real S_(face_t f,Thread* t){
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::enthalpy)))){
         h = F_UDSI(f,t,uds::enthalpy);
@@ -311,6 +311,6 @@ real beta_current(face_t f,Thread* t){
     case state_of_cell::vapor:
         return 1;
     case state_of_cell::mixture:
-        return (Rho_v(f,t)/ Rho_m(f,t) * (1-S(f,t)) * H_fg(f,t) + Specific_Heat_l(f,t)*T_sat(f,t)) / ((1-L(f,t))*H_fg(f,t)+Specific_Heat_l(f,t)*T_sat(f,t))
+        return (Rho_v(f,t)/ Rho_m(f,t) * (1-S_(f,t)) * H_fg(f,t) + Specific_Heat_l(f,t)*T_sat(f,t)) / ((1-L(f,t))*H_fg(f,t)+Specific_Heat_l(f,t)*T_sat(f,t))
     }
 }

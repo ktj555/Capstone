@@ -7,7 +7,7 @@ int state(cell_t c, Thread* t);
 
 
 real T_f(cell_t c, Thread* t);
-real S(cell_t c, Thread* t);
+real S_(cell_t c, Thread* t);
 real dT_dH(cell_t c,Thread* t);
 real dS_dH(cell_t c,Thread* t);
 
@@ -37,7 +37,7 @@ real beta_past(cell_t c,Thread* t);
 // face
 int state(face_t f, Thread* t);
 real T_f(face_t f,Thread* t);
-real S(face_t f,Thread* t);
+real S_(face_t f,Thread* t);
 real T_sat(face_t f,Thread* t);
 real H_fg(face_t f,Thread* t);
 real H_sat_l(face_t f,Thread* t);

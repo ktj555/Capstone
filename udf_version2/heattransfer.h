@@ -46,7 +46,7 @@ real Pr_l(face_t f, Thread* t);
 real Pr_v(face_t f, Thread* t);
 real Nu_l(face_t f, Thread* t);
 real Nu_v(face_t f, Thread* t);
-real h_l(face_t f Thread* t);
+real h_l(face_t f, Thread* t);
 real h_v(face_t f, Thread* t);
 
 #endif

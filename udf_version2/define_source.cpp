@@ -15,8 +15,8 @@ DEFINE_SOURCE(source_for_fluid,c,t,dS,eqn){
         return q_v(c,t);
         
     case state_of_cell::mixture:
-        dS[eqn] = q_boil(c,t) + S(c,t) * dqboil_dS(c,t) - q_v(c,t);
-        return S(c,t) * q_boil(c,t) + (1-S(c,t)) * q_v(c,t);
+        dS[eqn] = q_boil(c,t) + S_(c,t) * dqboil_dS(c,t) - q_v(c,t);
+        return S_(c,t) * q_boil(c,t) + (1-S_(c,t)) * q_v(c,t);
     }
 }
 
@@ -29,7 +29,7 @@ DEFINE_SOURCE(source_for_solid,c,t,ds,eqn){
         dS[eqn] = -dqv_dT(c,t) * dT_dH(c,t);
         return -q_v(c,t);
     case state_of_cell::mixture:
-        dS[eqn] = -q_boil(c,t) - S(c,t) * dqboil_dS(c,t) + q_v(c,t);
-        return -S(c,t) * q_boil(c,t) - (1-S(c,t)) * q_v(c,t);
+        dS[eqn] = -q_boil(c,t) - S_(c,t) * dqboil_dS(c,t) + q_v(c,t);
+        return -S_(c,t) * q_boil(c,t) - (1-S_(c,t)) * q_v(c,t);
     }
 }

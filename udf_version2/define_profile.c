@@ -48,7 +48,7 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 			h_c = h_v(f,t);
 			break;
 		case state_of_cell::mixture:
-			h_c = S(f,t) * h_l(f,t) + (1-S) * h_v(f,t);
+			h_c = S_(f,t) * h_l(f,t) + (1-S_(f,t)) * h_v(f,t);
 			break;
 		}
 
