@@ -13,17 +13,17 @@ DEFINE_DIFFUSIVITY(diffusivity_for_fluid, c, t, i){
     e = Porosity(c,t);
 
     switch(state(c,t)){
-    case state_of_cell::liquid:
+    case liquid:
         k_l = Conductivity_l(c,t);
         cp_l = Specific_Heat_l(c,t);
         return e * k_l / cp_l;
 
-    case state_of_cell::vapor:
+    case vapor:
         k_v = Conductivity_v(c,t);
         cp_v = Specific_Heat_v(c,t);
         return e * k_v / cp_v;
         
-    case state_of_cell::mixture:
+    case mixture:
         K = Permeability(c,t);
         nu = Kinematic_Viscosity_m(c,t);
         lambda = L(c,t);

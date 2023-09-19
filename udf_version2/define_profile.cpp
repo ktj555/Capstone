@@ -32,8 +32,8 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 
 	begin_f_loop(f, t)
 	{	
-		if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(uds::temp_s)))){
-        	T_s = F_UDSI(f,t,uds::temp_s);
+		if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        	T_s = F_UDSI(f,t,temp_s);
 		}
 		else{
 			T_s = T_f(f,t);
@@ -69,13 +69,13 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	{
 		switch(state(f,t)){
 		case liquid:
-			F_PROFILE(f,t,i) = m_fluc / Rho_l(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_l(f,t);
 			break;
 		case vapor:
-			F_PROFILE(f,t,i) = m_fluc / Rho_v(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_v(f,t);
 			break;
 		case mixture:
-			F_PROFILE(f,t,i) = m_fluc / Rho_m(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_m(f,t);
 			break;
 		}
 	}

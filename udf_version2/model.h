@@ -12,7 +12,7 @@ typedef struct constant{
     real init_dt;
     real reservoir_temp;
     real reservoir_enthalpy;
-};
+}constant;
 
 enum uds{
     enthalpy,
@@ -33,7 +33,7 @@ real Porosity(cell_t c, Thread* t);
 real Permeability(cell_t c, Thread* t);
 real Particle_Diameter(cell_t c, Thread* t);
 real Porosity(face_t f,Thread* t);
-real Particle_Diameter(face_t f,Thread* t);
+real Particle_Diameter_face(face_t f,Thread* t);
 
 extern constant model;
 

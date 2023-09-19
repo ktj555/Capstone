@@ -35,7 +35,7 @@ real Pr_l(cell_t c, Thread* t){
     return Viscosity_l(c,t) * Specific_Heat_l(c,t) / Conductivity_l(c,t);
 }
 real Pr_v(cell_t c, Thread* t){
-    return Viscosity_v(c,t) * Specific_heat_v(c,t) / Conductivity_v(c,t);
+    return Viscosity_v(c,t) * Specific_Heat_v(c,t) / Conductivity_v(c,t);
 }
 
 real Nu_l(cell_t c, Thread* t){
@@ -106,7 +106,7 @@ real dRev_dT(cell_t c,Thread* t){
     else{
         v = 0;
     }
-    reteurn -v * Particle_Diameter(c,t) / pow(Kinematic_Viscosity_v(c,t),2) * dnuv_dT(c,t);
+    return -v * Particle_Diameter(c,t) / pow(Kinematic_Viscosity_v(c,t),2) * dnuv_dT(c,t);
 }
 real dPrl_dT(cell_t c,Thread* t){
     return (dmul_dT(c,t) * Specific_Heat_l(c,t) + Viscosity_l(c,t) * dcpl_dT(c,t) - Pr_l(c,t) * dkl_dT(c,t)) / Conductivity_l(c,t);
@@ -144,7 +144,7 @@ real dqv_dT(cell_t c,Thread* t){
     else{
         T_s = T_f(c,t);
     }
-    return dhv_dT(c,t) * alpha_sf(c,t) * (T_s - T_f(C,t)) - h_v(c,t) * alpha_sf(c,t);
+    return dhv_dT(c,t) * alpha_sf(c,t) * (T_s - T_f(c,t)) - h_v(c,t) * alpha_sf(c,t);
 }
 
 real dqboil_dS(cell_t c,Thread* t){
@@ -155,40 +155,93 @@ real dqboil_dS(cell_t c,Thread* t){
     else{
         T_s = T_f(c,t);
     }
-    return alpha_sf(c,t) * dnu_dS(c,t) * H_fg(c,t) * sqrt(9.81 * (Rho_l(c,t) - Rho_v(c,t)) / model.sigma) * pow(Specific_Heat_l(c,t) * (T_s - T_sat(c,t)) / (model.c_sf * H_fg(c,t) * Pr_l(c,t)) , 3)
+    return alpha_sf(c,t) * dnu_dS(c,t) * H_fg(c,t) * sqrt(9.81 * (Rho_l(c,t) - Rho_v(c,t)) / model.sigma) * pow(Specific_Heat_l(c,t) * (T_s - T_sat(c,t)) / (model.c_sf * H_fg(c,t) * Pr_l(c,t)) , 3);
 }
 
 // BC
 real inlet_enthalpy_l(face_t f,Thread* t){
-	real q_in, mass_in, m_flux;
+	real q_in, mass_in, m_flux, T_s, dhdx;
+    cell_t c;
+    Thread* tc;
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
 	m_flux = mass_in / (pow(model.D,2) / 4);
 
-    return (model.reservoir_enthalpy + h_inlet(f,t) / m_flux * Solid_temp(f,t) - Conductivity_m(f,t) / m_flux / Specific_Heat_l(f,t) * Gradient_Enthalpy(f,t)) / (1 + h_inlet(f,t) / m_flux / Specific_Heat_l(f,t));
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = F_UDSI(f,t,temp_s);
+    }
+    else{
+        T_s = T_f(f,t);
+    }
+    c = F_C0(f,t);
+    tc = THREAD_T0(t);
+    if (NNULLP(T_STORAGE_R_NV(tc, SV_UDSI_G(enthalpy)))) {
+        dhdx = C_UDSI_G(c, tc, enthalpy)[0];
+    }
+    else {
+        dhdx = 0.0;
+    }
+
+    return (model.reservoir_enthalpy + h_l(f,t) / m_flux * T_s - Conductivity_m(f,t) / m_flux / Specific_Heat_l(f,t) * dhdx) / (1 + h_l(f,t) / m_flux / Specific_Heat_l(f,t));
 }
 real inlet_enthalpy_v(face_t f,Thread* t){
-    real q_in, mass_in, m_flux;
+    real q_in, mass_in, m_flux, T_s, dhdx;
+    cell_t c;
+    Thread* tc;
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
 	m_flux = mass_in / (pow(model.D,2) / 4);
 
-    return (model.reservoir_enthalpy + h_inlet(f,t) / m_flux * (Solid_temp(f,t) - T_sat(f,t) + H_sat_v(f,t) / Specific_Heat_v(f,t)) - Conductivity_m(f,t) * Porosity(f,t) / Specific_Heat_v(f,t) * Gradient_Enthalpy(f,t)) / (1+h_inlet(f,t) / m_flux / Specific_Heat_v(f,t));
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = F_UDSI(f,t,temp_s);
+    }
+    else{
+        T_s = T_f(f,t);
+    }
+    c = F_C0(f,t);
+    tc = THREAD_T0(t);
+    if (NNULLP(T_STORAGE_R_NV(tc, SV_UDSI_G(enthalpy)))) {
+        dhdx = C_UDSI_G(c, tc, enthalpy)[0];
+    }
+    else {
+        dhdx = 0.0;
+    }
+
+    return (model.reservoir_enthalpy + h_v(f,t) / m_flux * (T_s - T_sat(f,t) + H_sat_v(f,t) / Specific_Heat_v(f,t)) - Conductivity_m(f,t) * Porosity(f,t) / Specific_Heat_v(f,t) * dhdx) / (1+h_v(f,t) / m_flux / Specific_Heat_v(f,t));
 }
 real inlet_enthalpy_m(face_t f,Thread* t){
-    real q_in, mass_in, m_flux;
+    real q_in, mass_in, m_flux, h_inlet, T_s, dPdx;
+    cell_t c;
+    Thread* tc;
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
 	m_flux = mass_in / (pow(model.D,2) / 4);
 
-    return (model.reservoir_enthalpy + h_inlet(f,t) / m_flux * (Solid_temp(f,t) - T_sat(f,t)) - Conductivity_m(f,t) * Porosity(f,t) / m_flux * dTsat_dP(f,t) * Gradient_Pressure(f,t)) / beta_current(f,t);
+    h_inlet = S_(f,t) * h_l(f,t) + (1-S_(f,t)) * h_v(f,t);
+
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = F_UDSI(f,t,temp_s);
+    }
+    else{
+        T_s = T_f(f,t);
+    }
+    c = F_C0(f,t);
+    tc = THREAD_T0(t);
+    if(NNULLP(THREAD_STORAGE(tc,SV_P_G))){
+        dPdx = C_P_G(c,tc)[0];
+    }
+    else{
+        dPdx = 0;
+    }
+
+    return (model.reservoir_enthalpy + h_inlet / m_flux * (T_s - T_sat(f,t)) - Conductivity_m(f,t) * Porosity(f,t) / m_flux * dTsat_dP(f,t) * dPdx) / beta_current(f,t);
 }
 
 // face
-real Re_l(face_t f,Thread* t){
+real Re_l_face(face_t f,Thread* t){
     real NV_VEC(psi);
     real v;
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
@@ -198,9 +251,9 @@ real Re_l(face_t f,Thread* t){
     else{
         v = 0;
     }
-    return v * Particle_Diameter(f,t) / Kinematic_Viscosity_l(f,t);
+    return v * Particle_Diameter_face(f,t) / Kinematic_Viscosity_l_face(f,t);
 }
-real Re_v(face_t f, Thread* t){
+real Re_v_face(face_t f, Thread* t){
     real NV_VEC(psi);
     real v;
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
@@ -210,23 +263,23 @@ real Re_v(face_t f, Thread* t){
     else{
         v = 0;
     }
-    return v * Particle_Diameter(f,t) / Kinematic_Viscosity_v(f,t);
+    return v * Particle_Diameter_face(f,t) / Kinematic_Viscosity_v_face(f,t);
 }
-real Pr_l(face_t f, Thread* t){
-    return Viscosity_l(f,t) * Specific_Heat_l(f,t) / Conductivity_l(f,t);
+real Pr_l_face(face_t f, Thread* t){
+    return Viscosity_l_face(f,t) * Specific_Heat_l_face(f,t) / Conductivity_l_face(f,t);
 }
-real Pr_v(face_t f, Thread* t){
-    return Viscosity_v(f,t) * Specific_heat_v(f,t) / Conductivity_v(f,t);
+real Pr_v_face(face_t f, Thread* t){
+    return Viscosity_v_face(f,t) * Specific_heat_v_face(f,t) / Conductivity_v_face(f,t);
 }
-real Nu_l(face_t f, Thread* t){
-    return 2 + 1.1 * pow(Pr_l(f,t), 0.33) * pow(Re_l(f,t), 0.6);
+real Nu_l_face(face_t f, Thread* t){
+    return 2 + 1.1 * pow(Pr_l_face(f,t), 0.33) * pow(Re_l_face(f,t), 0.6);
 }
-real Nu_v(face_t f, Thread* t){
-    return 2 + 1.1 * pow(Pr_v(f,t),0.33) * pow(Re_v(f,t), 0.6);
+real Nu_v_face(face_t f, Thread* t){
+    return 2 + 1.1 * pow(Pr_v_face(f,t),0.33) * pow(Re_v_face(f,t), 0.6);
 }
-real h_l(face_t f, Thread* t){
-    return Nu_l(f,t) * Conductivity_l(f,t) / Particle_Diameter(f,t);
+real h_l_face(face_t f, Thread* t){
+    return Nu_l_face(f,t) * Conductivity_l_face(f,t) / Particle_Diameter_face(f,t);
 }
-real h_v(face_t f, Thread* t){
-    return Nu_v(f,t) * Conductivity_v(f,t) / Particle_Diameter(f,t);
+real h_v_face(face_t f, Thread* t){
+    return Nu_v_face(f,t) * Conductivity_v_face(f,t) / Particle_Diameter_face(f,t);
 }

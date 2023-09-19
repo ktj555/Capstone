@@ -35,13 +35,14 @@ real H_sat_v_past(cell_t c,Thread* t);
 real beta_past(cell_t c,Thread* t);
 
 // face
-int state(face_t f, Thread* t);
-real T_f(face_t f,Thread* t);
-real S_(face_t f,Thread* t);
-real T_sat(face_t f,Thread* t);
-real H_fg(face_t f,Thread* t);
-real H_sat_l(face_t f,Thread* t);
-real H_sat_v(face_t f,Thread* t);
-real beta_current(face_t f,Thread* t);
+int state_face(face_t f, Thread* t);
+real T_f_face(face_t f,Thread* t);
+real S_face(face_t f,Thread* t);
+real T_sat_face(face_t f,Thread* t);
+real H_fg_face(face_t f,Thread* t);
+real H_sat_l_face(face_t f,Thread* t);
+real H_sat_v_face(face_t f,Thread* t);
+real beta_current_face(face_t f,Thread* t);
+real dTsat_dP_face(face_t f, Thread* t);
 
 #endif

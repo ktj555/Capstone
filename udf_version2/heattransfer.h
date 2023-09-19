@@ -40,13 +40,13 @@ real inlet_enthalpy_v(face_t f,Thread* t);
 real inlet_enthalpy_m(face_t f,Thread* t);
 
 // face
-real Re_l(face_t f, Thread* t);
-real Re_v(face_t f, Thread* t);
-real Pr_l(face_t f, Thread* t);
-real Pr_v(face_t f, Thread* t);
-real Nu_l(face_t f, Thread* t);
-real Nu_v(face_t f, Thread* t);
-real h_l(face_t f, Thread* t);
-real h_v(face_t f, Thread* t);
+real Re_l_face(face_t f, Thread* t);
+real Re_v_face(face_t f, Thread* t);
+real Pr_l_face(face_t f, Thread* t);
+real Pr_v_face(face_t f, Thread* t);
+real Nu_l_face(face_t f, Thread* t);
+real Nu_v_face(face_t f, Thread* t);
+real h_l_face(face_t f, Thread* t);
+real h_v_face(face_t f, Thread* t);
 
 #endif

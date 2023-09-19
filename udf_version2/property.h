@@ -73,22 +73,22 @@ real Viscosity_m_past(cell_t c, Thread* t);
 real Kinematic_Viscosity_m_past(cell_t c,Thread* t);
 
 // face
-real Specific_Heat_l(face_t f,Thread* t);
-real Specific_Heat_v(face_t f,Thread* t);
-real Specific_Heat_s(face_t f,Thread* t);
-real Specific_Heat_m(face_t f,Thread* t);
-real Conductivity_l(face_t f, Thread* t);
-real Conductivity_v(face_t f, Thread* t);
-real Conductivity_s(face_t f, Thread* t);
-real Conductivity_m(face_t f, Thread*t);
-real Rho_l(face_t f, Thread* t);
-real Rho_v(face_t f, Thread* t);
-real Rho_m(face_t f, Thread* t);
-real Viscosity_l(face_t f,Thread* t);
-real Viscosity_v(face_t f,Thread* t);
-real Kinematic_Viscosity_l(face_t f,Thread* t);
-real Kinematic_Viscosity_v(face_t f,Thread* t);
-real K_rl(face_t f,Thread* t);
-real L(face_t f,Thread* t);
+real Specific_Heat_l_face(face_t f,Thread* t);
+real Specific_Heat_v_face(face_t f,Thread* t);
+real Specific_Heat_s_face(face_t f,Thread* t);
+real Specific_Heat_m_face(face_t f,Thread* t);
+real Conductivity_l_face(face_t f, Thread* t);
+real Conductivity_v_face(face_t f, Thread* t);
+real Conductivity_s_face(face_t f, Thread* t);
+real Conductivity_m_face(face_t f, Thread*t);
+real Rho_l_face(face_t f, Thread* t);
+real Rho_v_face(face_t f, Thread* t);
+real Rho_m_face(face_t f, Thread* t);
+real Viscosity_l_face(face_t f,Thread* t);
+real Viscosity_v_face(face_t f,Thread* t);
+real Kinematic_Viscosity_l_face(face_t f,Thread* t);
+real Kinematic_Viscosity_v_face(face_t f,Thread* t);
+real K_rl_face(face_t f,Thread* t);
+real L_face(face_t f,Thread* t);
 
 #endif

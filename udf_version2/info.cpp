@@ -73,13 +73,13 @@ real dS_dH(cell_t c,Thread* t){
 }
 
 real T_sat(cell_t c, Thread* t){
-    real P;
+    real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        P = (C_P(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (C_P(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
-        P = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure") / 1e6;
     }
     a0 = 429.69474687605754;
 	a1 = 11.983108526790891;
@@ -179,13 +179,13 @@ real S_past(cell_t c, Thread* t){
     }
 }
 real T_sat_past(cell_t c, Thread* t){
-    real P;
+    real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        P = (C_P_M1(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (C_P_M1(c,t); + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
-        P = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure") / 1e6;
     }
     a0 = 429.69474687605754;
 	a1 = 11.983108526790891;
@@ -221,7 +221,7 @@ real beta_past(cell_t c, Thread* t){
 }
 
 // face
-int state(face_t f, Thread* t){
+int state_face(face_t f, Thread* t){
     real h_l_sat = H_sat_l(f,t);
     real h_v_sat = H_sat_v(f,t);
     real h;
@@ -236,7 +236,7 @@ int state(face_t f, Thread* t){
     else if(h>=h_v_sat) return vapor;
     else return mixture;
 }
-real T_f(face_t f, Thread* t){
+real T_f_face(face_t f, Thread* t){
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
         h = F_UDSI(f,t,enthalpy);
@@ -246,14 +246,14 @@ real T_f(face_t f, Thread* t){
     }
     switch(state(f,t)){
     case liquid:
-        return model.T_ref + h / Specific_Heat_l(f,t);
+        return model.T_ref + h / Specific_Heat_l_face(f,t);
     case vapor:
-        return T_sat(f,t) + (h - H_v_sat(f,t)) / Specific_Heat_v(f,t);
+        return T_sat_face(f,t) + (h - H_v_sat_face(f,t)) / Specific_Heat_v_face(f,t);
     case mixture:
-        return T_sat(f,t);
+        return T_sat_face(f,t);
     }
 }
-real S_(face_t f,Thread* t){
+real S_face(face_t f,Thread* t){
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
         h = F_UDSI(f,t,enthalpy);
@@ -268,19 +268,19 @@ real S_(face_t f,Thread* t){
         return 0;
     case mixture:
         real nu_r, h_r;
-        nu_r = Kinematic_Viscosity_v(f,t) / Kinematic_Viscosity_l(f,t);
-        h_r = H_fg(f,t) / (H_sat_v(f,t) - h);
+        nu_r = Kinematic_Viscosity_v_face(f,t) / Kinematic_Viscosity_l_face(f,t);
+        h_r = H_fg_face(f,t) / (H_sat_v_face(f,t) - h);
         return 1 / (pow(nu_r * (h_r - 1), 0.33) + 1);
     }
 }
-real T_sat(face_t f, Thread* t){
-    real P;
+real T_sat_face(face_t f, Thread* t){
+    real p;
     real a0,a1,a2,a3;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        P = (F_P(f,t); + RP_Get_Real("operating-pressure")) / 1e6;
+        p = (F_P(f,t); + RP_Get_Real("operating-pressure")) / 1e6;
     }
     else{
-        P = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure") / 1e6;
     }
     a0 = 429.69474687605754;
 	a1 = 11.983108526790891;
@@ -288,9 +288,9 @@ real T_sat(face_t f, Thread* t){
 	a3 = 25.197563642164386;
     return a0 + a1 * p + a2 * pow(p, 2) + a3 * log(p);
 }
-real H_fg(face_t f, Thread* t){
+real H_fg_face(face_t f, Thread* t){
     real T;
-    T = T_sat(f,t);
+    T = T_sat_face(f,t);
     if (T > 650) { return 0; }
 	real a0 = -2511.1589762597114;
 	real a1 = 1.790037469059945;
@@ -298,19 +298,34 @@ real H_fg(face_t f, Thread* t){
 	real a3 = 222.03437607975306;
 	return (a0 + a1 * T + a2 * pow(T, 2) + a3 * sqrt(650 - T))*1000;
 }
-real H_sat_l(face_t f, Thread* t){
-    return Specific_Heat_l(f,t) * T_sat(f,t);
+real H_sat_l_face(face_t f, Thread* t){
+    return Specific_Heat_l_face(f,t) * T_sat_face(f,t);
 }
-real H_sat_v(cell_t c, Thread* t){
-    return H_sat_l(f,t) + H_fg(f,t);
+real H_sat_v_face(cell_t c, Thread* t){
+    return H_sat_l_face(f,t) + H_fg_face(f,t);
 }
-real beta_current(face_t f,Thread* t){
+real beta_current_face(face_t f,Thread* t){
     switch(state(f,t)){
     case liquid:
         return 1;
     case vapor:
         return 1;
     case mixture:
-        return (Rho_v(f,t)/ Rho_m(f,t) * (1-S_(f,t)) * H_fg(f,t) + Specific_Heat_l(f,t)*T_sat(f,t)) / ((1-L(f,t))*H_fg(f,t)+Specific_Heat_l(f,t)*T_sat(f,t))
+        return (Rho_v_face(f,t)/ Rho_m_face(f,t) * (1-S_face(f,t)) * H_fg_face(f,t) + Specific_Heat_l_face(f,t)*T_sat_face(f,t)) / ((1-L_face(f,t))*H_fg_face(f,t)+Specific_Heat_l_face(f,t)*T_sat_face(f,t))
     }
+}
+real dTsat_dP_face(face_t f,Thread* t){
+    real p;
+    real a0,a1,a2,a3;
+    if(NNULLP(THREAD_STORAGE(t,SV_P))){
+        p = (F_P(f,t); + RP_Get_Real("operating-pressure")) / 1e6;
+    }
+    else{
+        p = RP_Get_Real("operating-pressure") / 1e6;
+    }
+    a0 = 429.69474687605754;
+	a1 = 11.983108526790891;
+	a2 = -0.2940193901122584;
+	a3 = 25.197563642164386;
+    return (a1 + 2 * a2 * p + a3 / p) / 1e6;
 }
