@@ -31,7 +31,7 @@ real T_f(cell_t c, Thread* t){
     }
     switch(state(c,t)){
     case liquid:
-        return figure.T_ref + h / Specific_Heat_l(c,t);
+        return constant::T_ref + h / Specific_Heat_l(c,t);
     case vapor:
         return T_sat(c,t) + (h - H_sat_v(c,t)) / Specific_Heat_v(c,t);
     case mixture:
@@ -100,7 +100,7 @@ real H_fg(cell_t c, Thread* t){
 
 
 real H_sat_l(cell_t c, Thread* t){
-    return Specific_Heat_l(c,t) * (T_sat(c,t) - figure.T_ref);
+    return Specific_Heat_l(c,t) * (T_sat(c,t) - constant::T_ref);
 }
 real H_sat_v(cell_t c, Thread* t){
     return H_sat_l(c,t) + H_fg(c,t);
@@ -151,7 +151,7 @@ real T_f_past(cell_t c, Thread* t){
     }
     switch(state_past(c,t)){
     case liquid:
-        return figure.T_ref + h / Specific_Heat_l_past(c,t);
+        return constant::T_ref + h / Specific_Heat_l_past(c,t);
     case vapor:
         return T_sat_past(c,t) + (h - H_sat_v_past(c,t)) / Specific_Heat_v_past(c,t);
     case mixture:
@@ -222,8 +222,8 @@ real beta_past(cell_t c, Thread* t){
 
 // face
 int state_face(face_t f, Thread* t){
-    real h_l_sat = H_sat_l(f,t);
-    real h_v_sat = H_sat_v(f,t);
+    real h_l_sat = H_sat_l_face(f,t);
+    real h_v_sat = H_sat_v_face(f,t);
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
         h = F_UDSI(f,t,enthalpy);
@@ -244,9 +244,9 @@ real T_f_face(face_t f, Thread* t){
     else{
         h = 0;
     }
-    switch(state(f,t)){
+    switch(state_face(f,t)){
     case liquid:
-        return figure.T_ref + h / Specific_Heat_l_face(f,t);
+        return constant::T_ref + h / Specific_Heat_l_face(f,t);
     case vapor:
         return T_sat_face(f,t) + (h - H_sat_v_face(f,t)) / Specific_Heat_v_face(f,t);
     case mixture:
@@ -261,7 +261,7 @@ real S_face(face_t f,Thread* t){
     else{
         h = 0;
     }
-    switch(state(f,t)){
+    switch(state_face(f,t)){
     case liquid:
         return 1;
     case vapor:
@@ -305,7 +305,7 @@ real H_sat_v_face(face_t f, Thread* t){
     return H_sat_l_face(f,t) + H_fg_face(f,t);
 }
 real beta_current_face(face_t f,Thread* t){
-    switch(state(f,t)){
+    switch(state_face(f,t)){
     case liquid:
         return 1;
     case vapor:

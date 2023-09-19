@@ -16,8 +16,8 @@ DEFINE_INIT(init_function,d){
 
 	q_in = RP_Get_Real("myudf/heat");
 	mass_in = RP_Get_Real("myudf/mass");
-	A = M_PI * pow(figure.D, 2) / 4;
-    h_in = Specific_Heat_l(c,t) * figure.reservoir_temp;
+	A = M_PI * pow(constant::D, 2) / 4;
+    h_in = Specific_Heat_l(c,t) * constant::reservoir_temp;
     h_out = h_in + q_in/(mass_in/A);
 
 	thread_loop_c(t, d) {
@@ -25,8 +25,8 @@ DEFINE_INIT(init_function,d){
 		{
 			C_CENTROID(cen,c,t);
 			x = cen[0];
-			C_UDSI(c, t, uds::enthalpy) = h_in + (h_out - h_in) / figure.thickness * (x + figure.thickness * 0.5);
-			C_UDSI(c, t, uds::temp_s) = T_f(c,t) + figure.init_dt;
+			C_UDSI(c, t, uds::enthalpy) = h_in + (h_out - h_in) / constant::thickness * (x + constant::thickness * 0.5);
+			C_UDSI(c, t, uds::temp_s) = T_f(c,t) + constant::init_dt;
 		}
 		end_c_loop_all(c, t)
 	}
