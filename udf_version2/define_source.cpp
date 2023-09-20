@@ -27,7 +27,7 @@ DEFINE_SOURCE(source_for_solid,c,t,dS,eqn){
         dS[eqn] = -dqv_dTs(c,t);
         return -q_v(c,t);
     case mixture:
-        dS[eqn] = -S_(c,t) * dqboil_dTs(c,t); - (1-S) * dqv_dTs(c,t);
+        dS[eqn] = -S_(c,t) * dqboil_dTs(c,t) - (1-S) * dqv_dTs(c,t);
         return -S_(c,t) * q_boil(c,t) - (1-S_(c,t)) * q_v(c,t);
     }
 }
