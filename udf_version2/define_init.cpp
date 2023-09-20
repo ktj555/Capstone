@@ -9,6 +9,7 @@ extern constant models;
 DEFINE_INIT(init_function,d){
 #if !RP_HOST
 	cell_t c;
+	face_t f;
 	Thread* t;
 
 	real q_in, mass_in, m_flux;
@@ -33,15 +34,6 @@ DEFINE_INIT(init_function,d){
 		}
 		end_c_loop_all(c, t)
 	}
-	thread_loop_f(t,d){
-		begin_f_loop(f,t){
-			F_CENTRIOD(cen,c,t);
-			x = cen[0];
-			F_UDSI(c,t,enthalpy) = h_in + (h_out - h_in) / models.thickness * (x + models.thickness) * 0.5;
-			F_UDSI(c,t,temp_s) = T_f_face(f,t) + models.init_dt;
-		}
-	}
-
 
 #endif
 }
