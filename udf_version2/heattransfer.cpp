@@ -203,7 +203,7 @@ real inlet_enthalpy_l(face_t f,Thread* t){
         dhdx = 0.0;
     }
 
-    return (models.reservoir_enthalpy + h_l_face(f,t) / m_flux * T_s - Conductivity_m_face(f,t) / m_flux / Specific_Heat_l_face(f,t) * dhdx) / (1 + h_l_face(f,t) / m_flux / Specific_Heat_l_face(f,t));
+    return (models.reservoir_enthalpy + h_l_face(f,t) / m_flux * T_s - Porosity_face(f,t) * Conductivity_m_face(f,t) / m_flux / Specific_Heat_l_face(f,t) * dhdx) / (1 + h_l_face(f,t) / m_flux / Specific_Heat_l_face(f,t));
 }
 real inlet_enthalpy_v(face_t f,Thread* t){
     real q_in, mass_in, m_flux, T_s, dhdx;
@@ -265,7 +265,7 @@ real Re_l_face(face_t f,Thread* t){
     real NV_VEC(psi);
     real v;
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
-        NV_D(psi, =, F_U(f,t), F_V(f,t), C_W(f,t));
+        NV_D(psi, =, F_U(f,t), F_V(f,t), F_W(f,t));
         v = NV_MAG(psi);
     }
     else{
@@ -277,7 +277,7 @@ real Re_v_face(face_t f, Thread* t){
     real NV_VEC(psi);
     real v;
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
-        NV_D(psi, =, F_U(f,t), F_V(f,t), C_W(f,t));
+        NV_D(psi, =, F_U(f,t), F_V(f,t), F_W(f,t));
         v = NV_MAG(psi);
     }
     else{
