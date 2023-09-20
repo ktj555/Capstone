@@ -13,7 +13,7 @@ DEFINE_ON_DEMAND(get_data){
 
     thread_loop_c(t,d){
         begin_c_loop(c,t){
-            C_UDMI(c,t,data) = 0; // you can change
+            C_UDMI(c,t,data) = 0; // you can change it you want to get
         }
         end_c_loop(c,t)
     }

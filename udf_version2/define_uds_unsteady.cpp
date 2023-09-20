@@ -4,6 +4,13 @@
 #include "heattransfer.h"
 #include "info.h"
 
+/*
+DEFINE_SOURCE 매크로는 해당 셀에서의 unsteady term을 반환하는 것이 목표
+Argument : macro name, cell thread, thread (Group of cells), index, implicit term, explicit term
+
+{ macro name을 제외한 인자들은 fluent에서 자동으로 매칭}
+*/
+
 DEFINE_UDS_UNSTEADY(unsteady_for_fluid, c, t, i, apu, su){
     real dt, vol, rho, rho_old, phi_old, e, beta, beta_old;
 

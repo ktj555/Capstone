@@ -9,7 +9,7 @@ struct constant{
     real c_sf = 0.006;
     real D = 0.06;
     real thickness = 0.008;
-    real init_dt = 0.1;
+    real init_dt = 10;
     real reservoir_temp = 303.15;
     real reservoir_enthalpy = 0;
 };
