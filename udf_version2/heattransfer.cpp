@@ -160,6 +160,24 @@ real dqboil_dS(cell_t c,Thread* t){
     return alpha_sf(c,t) * dnu_dS(c,t) * H_fg(c,t) * sqrt(9.81 * (Rho_l(c,t) - Rho_v(c,t)) / models.sigma) * pow(Specific_Heat_l(c,t) * (T_s - T_sat(c,t)) / (models.c_sf * H_fg(c,t) * Pr_l(c,t)) , 3);
 }
 
+// derivative of T_s
+real dql_dTs(cell_t c, Thread* t){
+    return h_l(c,t) * alpha_sf(c,t);
+}
+real dqv_dTs(cell_t c, Thread* t){
+    return h_v(c,t) * alpha_sf(c,t);
+}
+real dqboil_dTs(cell_t c, Thread* t){
+    real T_s;
+    if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
+        T_s = C_UDSI(c,t,temp_s);
+    }
+    else{
+        T_s = T_f(c,t);
+    }
+    return q_boil(c,t) * 3 / (T_s - T_sat(c,t));
+}
+
 // BC
 real inlet_enthalpy_l(face_t f,Thread* t){
 	real q_in, mass_in, m_flux, T_s, dhdx;

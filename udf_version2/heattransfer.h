@@ -34,6 +34,11 @@ real dqv_dT(cell_t c,Thread* t);
 
 real dqboil_dS(cell_t c,Thread* t);
 
+// derivative of T_s
+real dql_dTs(cell_t c, Thread* t);
+real dqv_dTs(cell_t c, Thread* t);
+real dqboil_dTs(cell_t c, Thread* t);
+
 // BC
 real inlet_enthalpy_l(face_t f,Thread* t);
 real inlet_enthalpy_v(face_t f,Thread* t);

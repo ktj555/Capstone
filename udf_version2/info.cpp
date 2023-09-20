@@ -21,8 +21,6 @@ int state(cell_t c, Thread* t){
     else return mixture;
 }
 
-
-
 real T_f(cell_t c, Thread* t){
     real h;
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(enthalpy)))){
