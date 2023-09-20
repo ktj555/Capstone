@@ -9,7 +9,6 @@ extern constant models;
 DEFINE_INIT(init_function,d){
 #if !RP_HOST
 	cell_t c;
-	face_t f;
 	Thread* t;
 
 	real q_in, mass_in, m_flux;
