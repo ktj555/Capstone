@@ -38,19 +38,19 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
         	T_s = F_UDSI(f,t,temp_s);
 		}
 		else{
-			T_s = T_f(f,t);
+			T_s = T_f_face(f,t);
 		}
-		T = T_f(f,t);
+		T = T_f_face(f,t);
 
 		switch(state(f,t)){
 		case liquid:
-			h_c = h_l(f,t);
+			h_c = h_l_face(f,t);
 			break;
 		case vapor:
-			h_c = h_v(f,t);
+			h_c = h_v_face(f,t);
 			break;
 		case mixture:
-			h_c = S_(f,t) * h_l(f,t) + (1-S_(f,t)) * h_v(f,t);
+			h_c = S_face(f,t) * h_l_face(f,t) + (1-S_face(f,t)) * h_v_face(f,t);
 			break;
 		}
 
@@ -71,13 +71,13 @@ DEFINE_PROFILE(inlet_velocity, t, i)
 	{
 		switch(state(f,t)){
 		case liquid:
-			F_PROFILE(f,t,i) = m_flux / Rho_l(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_l_face(f,t);
 			break;
 		case vapor:
-			F_PROFILE(f,t,i) = m_flux / Rho_v(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_v_face(f,t);
 			break;
 		case mixture:
-			F_PROFILE(f,t,i) = m_flux / Rho_m(f,t);
+			F_PROFILE(f,t,i) = m_flux / Rho_m_face(f,t);
 			break;
 		}
 	}
