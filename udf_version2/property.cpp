@@ -8,7 +8,7 @@ real Conductivity_l(cell_t c, Thread* t){
 }
 real Conductivity_v(cell_t c, Thread* t){
     real a0, a1, T;
-    a0 = -21.99433e-3;
+    a0 = -21.994433e-3;
     a1 = 118.42e-6;
     T = T_f(c,t);
     return a0 + a1 * T;
@@ -40,10 +40,10 @@ real Rho_v(cell_t c,Thread* t){
     real R = 8.314, M_V = 0.018;
     real p;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (C_P(c,t) + RP_Get_Real("operating-pressure")) / 1e6;
+        p = C_P(c,t) + RP_Get_Real("operating-pressure");
     }
     else{
-        p = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure");
     }
     real T = T_f(c,t);
     return p / (T * R / M_V);
@@ -164,10 +164,10 @@ real Rho_v_past(cell_t c,Thread* t){
     real R = 8.314, M_V = 0.018;
     real p;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (C_P_M1(c,t) + RP_Get_Real("operating-pressure")) / 1e6;
+        p = C_P_M1(c,t) + RP_Get_Real("operating-pressure");
     }
     else{
-        p = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure");
     }
     real T = T_f_past(c,t);
     return p / (T * R / M_V);
@@ -244,10 +244,10 @@ real Rho_v_face(face_t f,Thread* t){
     real R = 8.314, M_V = 0.018;
     real p;
     if(NNULLP(THREAD_STORAGE(t,SV_P))){
-        p = (F_P(f,t) + RP_Get_Real("operating-pressure")) / 1e6;
+        p = F_P(f,t) + RP_Get_Real("operating-pressure");
     }
     else{
-        p = RP_Get_Real("operating-pressure") / 1e6;
+        p = RP_Get_Real("operating-pressure");
     }
     real T = T_f_face(f,t);
     return p / (T * R / M_V);
