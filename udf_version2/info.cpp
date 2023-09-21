@@ -204,7 +204,7 @@ real H_fg_past(cell_t c, Thread* t){
 	return (a0 + a1 * T + a2 * pow(T, 2) + a3 * sqrt(650 - T))*1000;
 }
 real H_sat_l_past(cell_t c, Thread* t){
-    return Specific_Heat_l_past(c,t) * T_sat_past(c,t);
+    return Specific_Heat_l_past(c,t) * (T_sat_past(c,t) - models.T_ref);
 }
 real H_sat_v_past(cell_t c, Thread* t){
     return H_sat_l_past(c,t) + H_fg_past(c,t);

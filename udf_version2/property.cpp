@@ -114,7 +114,7 @@ real dmul_dT(cell_t c,Thread* t){
     return -Viscosity_l(c,t) * 247.8 / pow(T - 140,2) * log(10);
 }
 real dmuv_dT(cell_t c,Thread* t){
-    real a1 = 40.35e-6;
+    real a1 = 40.35e-9;
     return a1;
 }
 real dnul_dT(cell_t c,Thread* t){

@@ -13,7 +13,7 @@ DEFINE_SOURCE(source_for_fluid,c,t,dS,eqn){
         dS[eqn] = dqv_dT(c,t) * dT_dH(c,t);
         return q_v(c,t);
     case mixture:
-        dS[eqn] = q_boil(c,t) + S_(c,t) * dqboil_dS(c,t) - q_v(c,t);
+        dS[eqn] = (q_boil(c,t) + S_(c,t) * dqboil_dS(c,t) - q_v(c,t)) * dS_dH(c,t);
         return S_(c,t) * q_boil(c,t) + (1-S_(c,t)) * q_v(c,t);
     }
 }
