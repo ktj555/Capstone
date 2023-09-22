@@ -16,9 +16,9 @@ real Particle_Diameter(cell_t c, Thread* t){
     C_CENTROID(cen,c,t);
     return 100e-6;
 }
-real Porosity_face(face_t c, Thread* t){
+real Porosity_face(face_t f, Thread* t){
     real cen[ND_ND];
-    C_CENTROID(cen,c,t);
+    F_CENTROID(cen,f,t);
     return 0.3;
 }
 real Particle_Diameter_face(face_t f, Thread* t){

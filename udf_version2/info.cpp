@@ -13,7 +13,7 @@ int state(cell_t c, Thread* t){
         h = C_UDSI(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return liquid;
     }
     
     if(h<=h_l_sat) return liquid;
@@ -27,7 +27,7 @@ real T_f(cell_t c, Thread* t){
         h = C_UDSI(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return models.T_ref
     }
     switch(state(c,t)){
     case liquid:
@@ -44,7 +44,7 @@ real S_(cell_t c,Thread* t){
         h = C_UDSI(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return 1;
     }
     switch(state(c,t)){
     case liquid:
@@ -134,7 +134,7 @@ int state_past(cell_t c,Thread* t){
         h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return liquid;
     }
 
     if(h<=h_l_sat_past) return liquid;
@@ -147,7 +147,7 @@ real T_f_past(cell_t c, Thread* t){
         h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return models.T_ref
     }
     switch(state_past(c,t)){
     case liquid:
@@ -164,7 +164,7 @@ real S_past(cell_t c, Thread* t){
         h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
-        h = 0;
+        return 1;
     }
     switch(state_past(c,t)){
     case liquid:
@@ -229,7 +229,7 @@ int state_face(face_t f, Thread* t){
         h = F_UDSI(f,t,enthalpy);
     }
     else{
-        h = 0;
+        return liquid;
     }
     
     if(h<=h_l_sat) return liquid;
@@ -242,7 +242,7 @@ real T_f_face(face_t f, Thread* t){
         h = F_UDSI(f,t,enthalpy);
     }
     else{
-        h = 0;
+        return models.T_ref;
     }
     switch(state_face(f,t)){
     case liquid:
@@ -259,7 +259,7 @@ real S_face(face_t f,Thread* t){
         h = F_UDSI(f,t,enthalpy);
     }
     else{
-        h = 0;
+        return 1;
     }
     switch(state_face(f,t)){
     case liquid:

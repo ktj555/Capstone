@@ -12,12 +12,17 @@ real alpha_sf(cell_t c, Thread* t){
 real Re_l(cell_t c,Thread* t){
     real NV_VEC(psi);
     real v;
+    real mass_in, m_flux;
+
+    mass_in = RP_Get_Real("myudf/mass");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
+
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
         NV_D(psi, =, C_U(c,t), C_V(c,t), C_W(c,t));
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_l(c,t);
     }
     return v * Particle_Diameter(c,t) / Kinematic_Viscosity_l(c,t);
 }
@@ -29,7 +34,7 @@ real Re_v(cell_t c, Thread* t){
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_v(c,t);
     }
     return v * Particle_Diameter(c,t) / Kinematic_Viscosity_v(c,t);
 }
@@ -89,24 +94,30 @@ real q_boil(cell_t c,Thread* t){
 real dRel_dT(cell_t c,Thread* t){
     real NV_VEC(psi);
     real v;
+    real mass_in, m_flux;
+    mass_in = RP_Get_Real("myudf/mass");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
         NV_D(psi, =, C_U(c,t), C_V(c,t), C_W(c,t));
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_l(c,t);
     }
     return -v * Particle_Diameter(c,t) / pow(Kinematic_Viscosity_l(c,t),2) * dnul_dT(c,t);
 }
 real dRev_dT(cell_t c,Thread* t){
     real NV_VEC(psi);
     real v;
+    real mass_in, m_flux;
+    mass_in = RP_Get_Real("myudf/mass");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
         NV_D(psi, =, C_U(c,t), C_V(c,t), C_W(c,t));
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_v(c,t);
     }
     return -v * Particle_Diameter(c,t) / pow(Kinematic_Viscosity_v(c,t),2) * dnuv_dT(c,t);
 }
@@ -264,24 +275,30 @@ real inlet_enthalpy_m(face_t f,Thread* t){
 real Re_l_face(face_t f,Thread* t){
     real NV_VEC(psi);
     real v;
+    real mass_in, m_flux;
+    mass_in = RP_Get_Real("myudf/mass");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
         NV_D(psi, =, F_U(f,t), F_V(f,t), F_W(f,t));
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_l_face(f,t);
     }
     return v * Particle_Diameter_face(f,t) / Kinematic_Viscosity_l_face(f,t);
 }
 real Re_v_face(face_t f, Thread* t){
     real NV_VEC(psi);
     real v;
+    real mass_in, m_flux;
+    mass_in = RP_Get_Real("myudf/mass");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
     if(NNULLP(THREAD_STORAGE(t,SV_U))){
         NV_D(psi, =, F_U(f,t), F_V(f,t), F_W(f,t));
         v = NV_MAG(psi);
     }
     else{
-        v = 0;
+        v = m_flux / Rho_v_face(f,t);
     }
     return v * Particle_Diameter_face(f,t) / Kinematic_Viscosity_v_face(f,t);
 }
