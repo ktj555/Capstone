@@ -27,7 +27,7 @@ real T_f(cell_t c, Thread* t){
         h = C_UDSI(c,t,enthalpy);
     }
     else{
-        return models.T_ref
+        return models.T_ref;
     }
     switch(state(c,t)){
     case liquid:
@@ -147,7 +147,7 @@ real T_f_past(cell_t c, Thread* t){
         h = C_UDSI_M1(c,t,enthalpy);
     }
     else{
-        return models.T_ref
+        return models.T_ref;
     }
     switch(state_past(c,t)){
     case liquid:
