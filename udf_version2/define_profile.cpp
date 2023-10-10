@@ -44,13 +44,13 @@ DEFINE_PROFILE(inlet_temp_s_flux, t, i)
 
 		switch(state(f,t)){
 		case liquid:
-			h_c = h_l_face(f,t);
+			h_c = Nu_l_face(f,t) * Conductivity_l_face(f,t) / models.D;
 			break;
 		case vapor:
-			h_c = h_v_face(f,t);
+			h_c = Nu_v_face(f,t) * Conductivity_v_face(f,t) / models.D;
 			break;
 		case mixture:
-			h_c = S_face(f,t) * h_l_face(f,t) + (1-S_face(f,t)) * h_v_face(f,t);
+			h_c = S_face(f,t) * (Nu_l_face(f,t) * Conductivity_l_face(f,t) / models.D) + (1-S_face(f,t)) * (Nu_v_face(f,t) * Conductivity_v_face(f,t) / models.D);
 			break;
 		}
 

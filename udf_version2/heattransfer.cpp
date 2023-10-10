@@ -196,7 +196,7 @@ real dqboil_dTs(cell_t c, Thread* t){
 
 // BC
 real inlet_enthalpy_l(face_t f,Thread* t){
-	real q_in, mass_in, m_flux, T_s, dhdx;
+	real q_in, mass_in, m_flux, T_s, dhdx, h_c;
     cell_t c;
     Thread* tc;
 
@@ -219,10 +219,12 @@ real inlet_enthalpy_l(face_t f,Thread* t){
         dhdx = 0.0;
     }
 
-    return (models.reservoir_enthalpy + h_l_face(f,t) / m_flux * (T_s - models.T_ref) - Porosity_face(f,t) * Conductivity_m_face(f,t) / m_flux / Specific_Heat_l_face(f,t) * dhdx) / (1 + h_l_face(f,t) / m_flux / Specific_Heat_l_face(f,t));
+    h_c = Nu_l_face(f,t) * Conductivity_l_face(f,t) / models.D
+
+    return (models.reservoir_enthalpy + h_c / m_flux * (T_s - models.T_ref) + Porosity_face(f,t) * Conductivity_l_face(f,t) / m_flux / Specific_Heat_l_face(f,t) * dhdx) / (1 + h_c / m_flux / Specific_Heat_l_face(f,t));
 }
 real inlet_enthalpy_v(face_t f,Thread* t){
-    real q_in, mass_in, m_flux, T_s, dhdx;
+    real q_in, mass_in, m_flux, T_s, dhdx, h_c;
     cell_t c;
     Thread* tc;
 
@@ -245,10 +247,12 @@ real inlet_enthalpy_v(face_t f,Thread* t){
         dhdx = 0.0;
     }
 
-    return (models.reservoir_enthalpy + h_v_face(f,t) / m_flux * (T_s - T_sat_face(f,t) + (H_sat_v_face(f,t)-models.reservoir_enthalpy) / Specific_Heat_v_face(f,t)) - Conductivity_m_face(f,t) * Porosity_face(f,t) / Specific_Heat_v_face(f,t) * dhdx) / (1+h_v_face(f,t) / m_flux / Specific_Heat_v_face(f,t));
+    h_c = Nu_v_face(f,t) * Conductivity_v_face(f,t) / models.D
+
+    return (models.reservoir_enthalpy + h_c / m_flux * (T_s - T_sat_face(f,t) + H_sat_v_face(f,t) / Specific_Heat_v_face(f,t)) + Conductivity_m_face(f,t) * Porosity_face(f,t) / Specific_Heat_v_face(f,t) * dhdx) / (1+h_c / m_flux / Specific_Heat_v_face(f,t));
 }
 real inlet_enthalpy_m(face_t f,Thread* t){
-    real q_in, mass_in, m_flux, h_inlet, T_s, dPdx;
+    real q_in, mass_in, m_flux, h_inlet, T_s, dPdx, h_cl, h_cv;
     cell_t c;
     Thread* tc;
 
@@ -256,7 +260,9 @@ real inlet_enthalpy_m(face_t f,Thread* t){
 	mass_in = RP_Get_Real("myudf/mass");
 	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
 
-    h_inlet = S_face(f,t) * h_l_face(f,t) + (1-S_face(f,t)) * h_v_face(f,t);
+    h_cl = Nu_l_face(f,t) * Conductivity_l_face(f,t) / models.D
+    h_cv = Nu_v_face(f,t) * Conductivity_v_face(f,t) / models.D
+    h_inlet = S_face(f,t) * h_cl + (1-S_face(f,t)) * h_cv;
 
     if(NNULLP(THREAD_STORAGE(t, SV_UDS_I(temp_s)))){
         T_s = F_UDSI(f,t,temp_s);
@@ -273,7 +279,7 @@ real inlet_enthalpy_m(face_t f,Thread* t){
         dPdx = 0;
     }
 
-    return (models.reservoir_enthalpy + h_inlet / m_flux * (T_s - T_sat_face(f,t)) - Conductivity_m_face(f,t) * Porosity_face(f,t) / m_flux * dTsat_dP_face(f,t) * dPdx) / beta_current_face(f,t);
+    return (models.reservoir_enthalpy + h_inlet / m_flux * (T_s - T_sat_face(f,t)) + Conductivity_m_face(f,t) * Porosity_face(f,t) / m_flux * dTsat_dP_face(f,t) * dPdx) / beta_current_face(f,t);
 }
 
 // face
