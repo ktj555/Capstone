@@ -197,6 +197,7 @@ real dqboil_dTs(cell_t c, Thread* t){
 // BC
 real inlet_enthalpy_l(face_t f,Thread* t){
 	real q_in, mass_in, m_flux, T_s, dhdx, h_c;
+    real dhdx_lim;
     cell_t c;
     Thread* tc;
 
@@ -221,10 +222,14 @@ real inlet_enthalpy_l(face_t f,Thread* t){
 
     h_c = Nu_l_face(f,t) * Conductivity_l_face(f,t) / models.D;
 
+    dhdx_lim = (Specific_Heat_l_face(f,t) * (T_s - models.T_ref) - models.reservoir_enthalpy) / (Porosity_face(f,t) * Conductivity_l_face(f,t) / Specific_Heat_l_face(f,t) / m_flux);
+    if(dhdx > dhdx_lim) dhdx = dhdx_lim / 2;
+
     return (models.reservoir_enthalpy + h_c / m_flux * (T_s - models.T_ref) + Porosity_face(f,t) * Conductivity_l_face(f,t) / m_flux / Specific_Heat_l_face(f,t) * dhdx) / (1 + h_c / m_flux / Specific_Heat_l_face(f,t));
 }
 real inlet_enthalpy_v(face_t f,Thread* t){
     real q_in, mass_in, m_flux, T_s, dhdx, h_c;
+    real dhdx_lim;
     cell_t c;
     Thread* tc;
 
@@ -248,6 +253,9 @@ real inlet_enthalpy_v(face_t f,Thread* t){
     }
 
     h_c = Nu_v_face(f,t) * Conductivity_v_face(f,t) / models.D;
+
+    dhdx_lim = m_flux * (Specific_Heat_v_face(f,t) * (T_s - T_sat_face(f,t)) + H_sat_v_face(f,t) - models.reservoir_enthalpy) / (Porosity_face(f,t) * Conductivity_v_face(f,t) / Specific_Heat_v_face(f,t));
+    if(dhdx > dhdx_lim) dhdx = dhdx_lim / 2;
 
     return (models.reservoir_enthalpy + h_c / m_flux * (T_s - T_sat_face(f,t) + H_sat_v_face(f,t) / Specific_Heat_v_face(f,t)) + Conductivity_m_face(f,t) * Porosity_face(f,t) / Specific_Heat_v_face(f,t) * dhdx) / (1+h_c / m_flux / Specific_Heat_v_face(f,t));
 }
