@@ -20,7 +20,8 @@ enum uds{
 };
 
 enum udm{
-    data
+    saturation,
+    fluid_temperature
 };
 
 enum state_of_cell{
