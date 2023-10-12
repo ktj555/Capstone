@@ -11,11 +11,7 @@ DEFINE_ADJUST(adjust_variables, d)
 #if !RP_HOST
 	cell_t c;
 	Thread* t;
-
-	real P;
-	real h_m;
-	real T_f, T_s;
-
+	
 	thread_loop_c(t, d) {
 		begin_c_loop(c, t)
 		{
