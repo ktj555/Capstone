@@ -9,7 +9,8 @@ real Porosity(cell_t c, Thread* t){
     return 0.3;
 }
 real Permeability(cell_t c, Thread* t){
-    return pow(Particle_Diameter(c,t),2) * pow(Porosity(c,t),3) / (150 * pow(1-Porosity(c,t),2));
+    return 1.31e-13;
+    // return pow(Particle_Diameter(c,t),2) * pow(Porosity(c,t),3) / (150 * pow(1-Porosity(c,t),2));
 }
 real Particle_Diameter(cell_t c, Thread* t){
     real cen[ND_ND];
