@@ -6,20 +6,35 @@
 
 extern constant models;
 
+real min(real x, real y){
+	if(x>=y) return y;
+	return x;
+}
+
+real max(real x, real y){
+	if(x>=y) return x;
+	return y;
+}
+
 DEFINE_PROFILE(inlet_enthalpy, t, i)
 {
 	face_t f;
 
+	real q_in, mass_in, m_flux;
+	mass_in = RP_Get_Real("myudf/mass");
+	q_in = RP_Get_Real("myudf/heat");
+	m_flux = mass_in / (pow(models.D,2) * M_PI / 4);
+
 	begin_f_loop(f,t){
 		switch(state(f,t)){
 		case liquid:
-			F_PROFILE(f,t,i) = inlet_enthalpy_l(f,t);
+			F_PROFILE(f,t,i) = max(min(H_sat_l_face(f,t),inlet_enthalpy_l(f,t)),models.reservoir_enthalpy);
 			break;
 		case vapor:
-			F_PROFILE(f,t,i) = inlet_enthalpy_v(f,t);
+			F_PROFILE(f,t,i) = max(min(models.reservoir_enthalpy + q_in / m_flux,inlet_enthalpy_v(f,t)),H_sat_v_face(f,t));
 			break;
 		case mixture:
-			F_PROFILE(f,t,i) = inlet_enthalpy_m(f,t);
+			F_PROFILE(f,t,i) = max(min(H_sat_v_face(f,t),inlet_enthalpy_m(f,t)),H_sat_l_face(f,t));
 			break;
 		}
 	}
